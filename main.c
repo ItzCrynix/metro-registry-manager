@@ -1,6 +1,6 @@
-#include<stdio.h>
-#include<string.h>
-#include"registro.h"
+#include <stdio.h>
+#include <string.h>
+#include "registro.h"
 
 typedef enum OPCOES {
     SAIR_PROGRAMA,
@@ -9,6 +9,8 @@ typedef enum OPCOES {
     BUSCAR_REGISTROS,
     BUSCAR_REGISTROS_RRN
 };
+
+int csv_para_binario(char* nome_arquivo_csv, char* nome_arquivo_binario);
 
 int main() {
     while (1) {
@@ -20,13 +22,13 @@ int main() {
                 char nome_arquivo_csv[100], nome_arquivo_binario[100];
                 scanf("%s %s", nome_arquivo_csv, nome_arquivo_binario);
 
-                if (escrever_registro_csv(nome_arquivo_csv, nome_arquivo_binario) == -1) {
+                if (csv_para_binario(nome_arquivo_csv, nome_arquivo_binario) == -1) {
                     printf("Falha no processamento do arquivo.\n");
                     break;
                 }
 
-                // caso passe no teste, é pra rodar o binarioNaTela (ainda não foi disponibilizado no edisciplinas)
-
+                // binarioNaTela()
+                
                 break;
             case LER_BINARIO:
                 break;
@@ -42,4 +44,22 @@ int main() {
                 break;
         }
     }
+}
+
+int csv_para_binario(char* nome_arquivo_csv, char* nome_arquivo_binario) {
+    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_ESCRITA_BINARIO);
+    if (arquivo_binario = NULL) {
+        return FILE_NOT_FOUND_ERROR;
+    }
+
+    FILE* arquivo_csv = fopen(nome_arquivo_csv, "r");
+    if (arquivo_csv == NULL) {
+        return FILE_NOT_FOUND_ERROR;
+    }
+
+    escrever_registros_csv(arquivo_csv, arquivo_binario);
+
+    fclose(arquivo_csv);
+    fclose(arquivo_binario);
+    return 0;
 }
