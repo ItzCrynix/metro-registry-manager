@@ -1,9 +1,11 @@
 #ifndef REGISTRO_H
 #define REGISTRO_H
 
-#define TAM_REG_CABECALHO 16
 #define TAM_REG_REGISTRO 80
 #define MODO_LEITURA_BINARIO "rb+"
+#define MODO_ESCRITA_BINARIO "wb+"
+
+#define FILE_NOT_FOUND_ERROR -1
 
 typedef struct registro Registro;
 
@@ -12,7 +14,7 @@ typedef struct registro Registro;
  * @param nome_arquivo nome do arquivo binário que será usado
  * @param novo_registro resitro contendo as informações de uma estação
  */
-int escrever_registro(char* nome_arquivo, Registro* novo_registro);
+int escrever_registro_csv(char* nome_arquivo_csv, char* nome_arquivo_binario);
 
 /**
  * @brief Lê um registro guardado no arquivo binário baseado no RRN (Relative Record Number)

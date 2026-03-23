@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<string.h>
 #include"registro.h"
 
 struct registro {
@@ -18,13 +19,20 @@ struct registro {
     char* nome_linha;
 };
 
-int escrever_registro(char* nome_arquivo, Registro* novo_registro) {
-    // Abre o arquivo no modo escrita/leitura binária
-    FILE* arquivo = fopen(nome_arquivo, MODO_LEITURA_BINARIO);
+int escrever_registro_csv(char* nome_arquivo_csv, char* nome_arquivo_binario) {
+    // Abre o arquivo binario no modo escrita/leitura binária
+    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_ESCRITA_BINARIO);
+    if (arquivo_binario == NULL) return FILE_NOT_FOUND_ERROR;
 
-    // faz alguma coisa
+    FILE* arquivo_csv = fopen(nome_arquivo_csv, "r");
+    if (arquivo_csv == NULL) return FILE_NOT_FOUND_ERROR;
 
-    fclose(arquivo);
+    // Precisa fazer:
+    // - criar os cabeçalhos
+    // - adicionar cada linha tokenizando os campos
+    // - lembrar de atualizar tanto o RRN quando o topo da pilha
+
+    fclose(arquivo_binario);
     return 0;
 }
 
