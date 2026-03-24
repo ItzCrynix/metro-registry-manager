@@ -19,7 +19,7 @@ typedef struct registro Registro;
  * @param nome_arquivo nome do arquivo binário que será usado
  * @param novo_registro resitro contendo as informações de uma estação
  */
-void escrever_registros_csv(FILE* nome_arquivo_csv, FILE* nome_arquivo_binario);
+int escrever_registros_csv(FILE* nome_arquivo_csv, FILE* nome_arquivo_binario);
 
 /**
  * @brief Lê um registro guardado no arquivo binário baseado no RRN (Relative Record Number)
@@ -28,6 +28,5 @@ void escrever_registros_csv(FILE* nome_arquivo_csv, FILE* nome_arquivo_binario);
  * @return Um registro, caso encontre, ou NULL
  */
 Registro* ler_registro_RRN(char* nome_arquivo, int RRN);
-
 
 #endif
