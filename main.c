@@ -1,14 +1,15 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "registro.h"
 
-typedef enum OPCOES {
+typedef enum opcoes {
     SAIR_PROGRAMA,
     INSERIR_CSV,
     LER_BINARIO,
     BUSCAR_REGISTROS,
     BUSCAR_REGISTROS_RRN
-};
+} Opcoes;
 
 int csv_para_binario(char* nome_arquivo_csv, char* nome_arquivo_binario);
 
@@ -48,7 +49,7 @@ int main() {
 
 int csv_para_binario(char* nome_arquivo_csv, char* nome_arquivo_binario) {
     FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_ESCRITA_BINARIO);
-    if (arquivo_binario = NULL) {
+    if (arquivo_binario == NULL) {
         return FILE_NOT_FOUND_ERROR;
     }
 
@@ -57,9 +58,9 @@ int csv_para_binario(char* nome_arquivo_csv, char* nome_arquivo_binario) {
         return FILE_NOT_FOUND_ERROR;
     }
 
-    escrever_registros_csv(arquivo_csv, arquivo_binario);
+    int resultado = escrever_registros_csv(arquivo_csv, arquivo_binario);
 
     fclose(arquivo_csv);
     fclose(arquivo_binario);
-    return 0;
+    return resultado;
 }
