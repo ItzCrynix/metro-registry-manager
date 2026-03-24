@@ -90,11 +90,7 @@ Registro* tokenizar_registro(char* buffer) {
 }
 
 int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
-    // Precisa fazer:
-    // - criar os cabeçalhos
-    // - adicionar cada linha tokenizando os campos
-    // - lembrar de atualizar tanto o RRN quando o topo da pilha
-
+    // Cria um arquivo para cuidar das mudanças do cabeçalho, para salvar depois
     Cabecalho* cabecalho_binario = novo_cabecalho();
     if (cabecalho_binario == NULL) {
         return MALLOC_ERROR;
@@ -121,11 +117,14 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
         cabecalho_binario->topo_pilha = cabecalho_binario->proximo_rrn++;
 
         fwrite(&novo_registro->removido, sizeof(char), 1, arquivo_binario);
-        fwrite(&novo_registro->proximo_registro, sizeof(int), 1, arquivo_binario);
-        fwrite(&novo_registro->codigo_estacao, sizeof(int), 1, arquivo_binario);
+
+        int bytes_remanescentes = TAM_REGISTRO_DADOS - (sizeof(int) * 9) - (sizeof(char) * (1 + novo_registro->tamanho_nome_estacao + novo_registro->tamanho_nome_linha));
 
         free(novo_registro);
     }
+
+    // Salva as ultimas alterações feitas do cabeçalho
+    escrever_cabecalho(arquivo_binario, cabecalho_binario);
 
     free(cabecalho_binario);
     return 0;
