@@ -29,3 +29,18 @@ void salvar_cabecalho(FILE* arquivo_binario, Cabecalho* cabecalho_binario) {
     fwrite(&cabecalho_binario->numero_estacoes, sizeof(int), 1, arquivo_binario);
     fwrite(&cabecalho_binario->numero_pares_estacoes, sizeof(int), 1, arquivo_binario);
 }
+
+Cabecalho* ler_cabecalho_binario(FILE* arquivo_binario) {
+    Cabecalho* cabecalho_binario = novo_cabecalho();
+    if (cabecalho_binario == NULL) {
+        return NULL;
+    }
+
+    fread(&cabecalho_binario->status, sizeof(char), 1, arquivo_binario);
+    fread(&cabecalho_binario->topo_pilha, sizeof(int), 1, arquivo_binario);
+    fread(&cabecalho_binario->proximo_rrn, sizeof(int), 1, arquivo_binario);
+    fread(&cabecalho_binario->numero_estacoes, sizeof(int), 1, arquivo_binario);
+    fread(&cabecalho_binario->numero_pares_estacoes, sizeof(int), 1, arquivo_binario);
+
+    return cabecalho_binario;
+}
