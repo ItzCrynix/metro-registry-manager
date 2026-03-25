@@ -28,4 +28,6 @@ Cabecalho* novo_cabecalho();
  */
 void salvar_cabecalho(FILE* arquivo_binario, Cabecalho* cabecalho_binario);
 
+Cabecalho* ler_cabecalho_binario(FILE* arquivo_binario);
+
 #endif

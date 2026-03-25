@@ -9,11 +9,12 @@ typedef enum opcoes {
     CONVERTER_CSV_BIN,
     LER_BINARIO,
     BUSCAR_REGISTROS,
-    BUSCAR_REGISTROS_RRN
+    BUSCAR_REGISTRO_RRN
 } Opcoes;
 
-void csv_para_binario(char* nome_arquivo_csv, char* nome_arquivo_binario);
 void buscar_registro_rrn();
+void csv_para_binario();
+void ler_arquivo_binario();
 
 int main() {
     while (1) {
@@ -22,21 +23,24 @@ int main() {
 
         switch (opcao) {
             case CONVERTER_CSV_BIN:
-                char nome_arquivo_csv[100], nome_arquivo_binario[100];
-                scanf("%s %s", nome_arquivo_csv, nome_arquivo_binario);
+                csv_para_binario();
+                break;
 
-                csv_para_binario(nome_arquivo_csv, nome_arquivo_binario);
-                break;
             case LER_BINARIO:
+                ler_arquivo_binario();
                 break;
+
             case BUSCAR_REGISTROS:
                 break;
-            case BUSCAR_REGISTROS_RRN:
+                
+            case BUSCAR_REGISTRO_RRN:
                 buscar_registro_rrn();
                 break;
+
             case SAIR_PROGRAMA:
                 exit(EXIT_SUCCESS);
                 break;
+
             default:
                 printf("Operacao nao suportada!\n");
                 break;
@@ -44,7 +48,14 @@ int main() {
     }
 }
 
-void csv_para_binario(char* nome_arquivo_csv, char* nome_arquivo_binario) {
+//
+// Funções puramente para deixar a estrutura da main mais limpa
+//
+
+void csv_para_binario() {
+    char nome_arquivo_csv[100], nome_arquivo_binario[100];
+    scanf("%s %s", nome_arquivo_csv, nome_arquivo_binario);
+
     FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_ESCRITA_BINARIO);
     FILE* arquivo_csv = fopen(nome_arquivo_csv, "r");
 
@@ -87,3 +98,20 @@ void buscar_registro_rrn(){
 
     fclose(arquivo_binario);
 }
+
+void ler_arquivo_binario() {
+    char nome_arquivo_binario[100];
+    scanf("%s", nome_arquivo_binario);
+
+    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
+
+    int erro = printar_arquivo_binario(arquivo_binario);
+
+    if (erro == NO_DATA_FOUND_ERROR) {
+        printf("Registro inexistente.\n");
+    } else if (erro == FILE_NOT_FOUND_ERROR) {
+        printf("Falha no processamento do arquivo.\n");
+    }
+
+    fclose(arquivo_binario);
+}   

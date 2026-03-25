@@ -195,3 +195,30 @@ int buscar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn) {
 
     return 0;
 }
+
+int printar_arquivo_binario(FILE* arquivo_binario) {
+    if (arquivo_binario == NULL) {
+        return FILE_NOT_FOUND_ERROR;
+    }
+
+    Cabecalho* cabecalho_binario = ler_cabecalho_binario(arquivo_binario);
+    if (cabecalho_binario == NULL) {
+        return MALLOC_ERROR;
+    }
+
+    if (cabecalho_binario->topo_pilha == -1 && cabecalho_binario->proximo_rrn == 0) {
+        return NO_DATA_FOUND_ERROR;
+    }
+
+    int RRN_atual = 0;
+
+    while (RRN_atual < cabecalho_binario->proximo_rrn) {
+        Registro* registro_atual = ler_registro_RRN(arquivo_binario, RRN_atual++);
+
+        if (registro_atual == NULL) {
+            continue;
+        }
+
+        // printa o bagui
+    }
+}
