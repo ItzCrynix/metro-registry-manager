@@ -6,7 +6,7 @@
 
 typedef enum opcoes {
     SAIR_PROGRAMA,
-    INSERIR_CSV,
+    CONVERTER_CSV_BIN,
     LER_BINARIO,
     BUSCAR_REGISTROS,
     BUSCAR_REGISTROS_RRN
@@ -20,12 +20,11 @@ int main() {
         scanf("%d", &opcao);
 
         switch (opcao) {
-            case INSERIR_CSV:
+            case CONVERTER_CSV_BIN:
                 char nome_arquivo_csv[100], nome_arquivo_binario[100];
                 scanf("%s %s", nome_arquivo_csv, nome_arquivo_binario);
 
                 csv_para_binario(nome_arquivo_csv, nome_arquivo_binario);
-                
                 break;
             case LER_BINARIO:
                 break;
