@@ -3,59 +3,11 @@
 #include <string.h>
 #include "registro.h"
 #include "utils.h"
+#include "cabecalho.h"
 
-struct registro {
-    char removido;
-    int proximo_registro;
-    int codigo_estacao;
-    int codigo_linha;
-    int codigo_proxima_estacao;
-    int distancia_proxima_estacao;
-    int codigo_linha_integracao;
-    int codigo_estacao_integracao;
-
-    int tamanho_nome_estacao;
-    char* nome_estacao;
-
-    int tamanho_nome_linha;
-    char* nome_linha;
-};
-
-typedef struct cabecalho {
-    char status;
-    int topo_pilha;
-    int proximo_rrn;
-    int numero_estacoes;
-    int numero_pares_estacoes;
-} Cabecalho;
-
-Cabecalho* novo_cabecalho() {
-    Cabecalho* novo = (Cabecalho*) malloc(sizeof(Cabecalho));
-    if (novo == NULL) {
-        return NULL;
-    }
-
-    // escreve os valores padrões que o cabeçalho deve assumir em um arquivo vazio
-    novo->status = STATUS_OK;
-    novo->topo_pilha = -1;
-    novo->proximo_rrn = 0;
-    novo->numero_estacoes = 0;
-    novo->numero_pares_estacoes = 0;
-
-    return novo;
-}
-
-void escrever_cabecalho(FILE* arquivo_binario, Cabecalho* cabecalho_binario) {
-    // volta o ponteiro para o inicio do arquivo
-    rewind(arquivo_binario);
-
-    // Escreve os registros de cabeçalho
-    fwrite(&cabecalho_binario->status, sizeof(char), 1, arquivo_binario);
-    fwrite(&cabecalho_binario->topo_pilha, sizeof(int), 1, arquivo_binario);
-    fwrite(&cabecalho_binario->proximo_rrn, sizeof(int), 1, arquivo_binario);
-    fwrite(&cabecalho_binario->numero_estacoes, sizeof(int), 1, arquivo_binario);
-    fwrite(&cabecalho_binario->numero_pares_estacoes, sizeof(int), 1, arquivo_binario);
-}
+//
+// Funções auxiliares do escrever_registro_csv()
+//
 
 Registro* tokenizar_registro(char* buffer) {
     Registro* registro_temporario = (Registro*) malloc(sizeof(Registro));
@@ -93,7 +45,7 @@ Registro* tokenizar_registro(char* buffer) {
     return registro_temporario;
 }
 
-void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
+void salvar_campos_fixos(FILE* arquivo_binario, Registro* novo_registro) {
     // status e informações do próximo registro na pilha
     fwrite(&novo_registro->removido, sizeof(char), 1, arquivo_binario);
     fwrite(&novo_registro->proximo_registro, sizeof(int), 1, arquivo_binario);
@@ -105,23 +57,34 @@ void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
     fwrite(&novo_registro->distancia_proxima_estacao, sizeof(int), 1, arquivo_binario);
     fwrite(&novo_registro->codigo_linha_integracao, sizeof(int), 1, arquivo_binario);
     fwrite(&novo_registro->codigo_estacao_integracao, sizeof(int), 1, arquivo_binario);
+}
+
+void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
+    long inicio_registro = ftell(arquivo_binario);
+
+    salvar_campos_fixos(arquivo_binario, novo_registro);
 
     fwrite(&novo_registro->tamanho_nome_estacao, sizeof(int), 1, arquivo_binario);
-    fwrite(novo_registro->nome_estacao, sizeof(char), novo_registro->tamanho_nome_estacao, arquivo_binario);
+    if (novo_registro->tamanho_nome_estacao > 0) {
+        fwrite(novo_registro->nome_estacao, sizeof(char), novo_registro->tamanho_nome_estacao, arquivo_binario);
+    }
 
     fwrite(&novo_registro->tamanho_nome_linha, sizeof(int), 1, arquivo_binario);
-    fwrite(novo_registro->nome_linha, sizeof(char), novo_registro->tamanho_nome_linha, arquivo_binario);
+    if (novo_registro->tamanho_nome_linha > 0) {
+        fwrite(novo_registro->nome_linha, sizeof(char), novo_registro->tamanho_nome_linha, arquivo_binario);
+    }
+
+    long final_registro = ftell(arquivo_binario);
 
     // escreve o final com $, caso sobre espaço
-    int bytes_escritos = sizeof(int) * 9 + (1 + novo_registro->tamanho_nome_estacao + novo_registro->tamanho_nome_linha);
-    int bytes_remanescentes = TAM_REGISTRO_DADOS - bytes_escritos;
-
+    int bytes_remanescentes = TAM_REGISTRO_DADOS - (final_registro - inicio_registro);
     if (bytes_remanescentes > 0) {
         char placeholder = '$';
         for (int i = 0; i < bytes_remanescentes; i++)
             fwrite(&placeholder, sizeof(char), 1, arquivo_binario);
     }
 }
+
 
 int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
     if (arquivo_binario == NULL || arquivo_csv == NULL) {
@@ -135,7 +98,7 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
     }
 
     // escreve o cabeçalho incial
-    escrever_cabecalho(arquivo_binario, cabecalho_binario);
+    salvar_cabecalho(arquivo_binario, cabecalho_binario);
 
     char buffer[200];
     // Descarta a primeira linha, que contem o nome das colunas
@@ -158,7 +121,7 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
     }
 
     // Salva as ultimas alterações feitas do cabeçalho
-    escrever_cabecalho(arquivo_binario, cabecalho_binario);
+    salvar_cabecalho(arquivo_binario, cabecalho_binario);
 
     free(cabecalho_binario);
     return 0;

@@ -5,14 +5,25 @@
 #define MODO_LEITURA_BINARIO "rb+"
 #define MODO_ESCRITA_BINARIO "wb+"
 
-#define TAM_REGISTRO_CABECALHO 17
-#define STATUS_OK 'o'
-#define STATUS_UNSTABLE 'u'
-
 #define FILE_NOT_FOUND_ERROR -1
 #define MALLOC_ERROR -2
 
-typedef struct registro Registro;
+typedef struct registro {
+    char removido;
+    int proximo_registro;
+    int codigo_estacao;
+    int codigo_linha;
+    int codigo_proxima_estacao;
+    int distancia_proxima_estacao;
+    int codigo_linha_integracao;
+    int codigo_estacao_integracao;
+
+    int tamanho_nome_estacao;
+    char* nome_estacao;
+
+    int tamanho_nome_linha;
+    char* nome_linha;
+} Registro;
 
 /**
  * @brief Escreve um registro novo no arquivo
