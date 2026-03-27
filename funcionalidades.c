@@ -63,9 +63,10 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
     // Descarta a primeira linha, que contem o nome das colunas
     fgets(buffer, sizeof(buffer), arquivo_csv);
 
+    Registro* novo_registro;
     // Lê o arquivo csv linha por linha
     while(fgets(buffer, sizeof(buffer), arquivo_csv)) {
-        Registro* novo_registro = tokenizar_registro(buffer);
+        novo_registro = tokenizar_registro(buffer);
         if (novo_registro == NULL) {
             return MALLOC_ERROR;
         }
@@ -75,9 +76,9 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
         novo_registro->proximo_registro = cabecalho_binario->topo_pilha;
 
         salvar_registro_binario(arquivo_binario, novo_registro);
-
-        free_registro(novo_registro);
     }
+
+    free_registro(novo_registro);
 
     // Salva as ultimas alterações feitas do cabeçalho e libera a memória
     cabecalho_binario->status = STATUS_CONSISTENT;
@@ -111,8 +112,9 @@ int printar_arquivo_binario(FILE* arquivo_binario) {
     int RRN_atual = 0;
     int registros_printados = 0;
 
+    Registro* registro_atual;
     while (RRN_atual < cabecalho_binario->proximo_rrn) {
-        Registro* registro_atual = ler_registro_RRN(arquivo_binario, RRN_atual++);
+        registro_atual = ler_registro_RRN(arquivo_binario, RRN_atual++);
 
         // Caso tenha registro excluido
         if (registro_atual == NULL) {
@@ -125,6 +127,7 @@ int printar_arquivo_binario(FILE* arquivo_binario) {
         registros_printados++;
     }
 
+    free_registro(registro_atual);
     free_cabecalho(cabecalho_binario);
 
     return NO_ERROR;
