@@ -1,6 +1,13 @@
 #ifndef FUNCS_H
 #define FUNCS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "registro.h"
+#include "utils.h"
+#include "cabecalho.h"
+
 #define MODO_LEITURA_BINARIO "rb+"
 #define MODO_ESCRITA_BINARIO "wb+"
 
@@ -24,7 +31,7 @@ int escrever_registros_csv(FILE* nome_arquivo_csv, FILE* nome_arquivo_binario);
  * @param RRN Relative Record Number, indica qual "linha" dos registros vai ser lida
  * @return Um registro, caso encontre, ou NULL
  */
-Registro* ler_registro_RRN(char* nome_arquivo, int RRN);
+Registro* ler_registro_RRN(FILE* nome_arquivo, int RRN);
 
 int printar_arquivo_binario(FILE* arquivo_binario);
 

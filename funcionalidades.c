@@ -1,10 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "funcionalidades.h"
-#include "registro.h"
-#include "utils.h"
-#include "cabecalho.h"
 
 //
 // Funções auxiliares do escrever_registro_csv()

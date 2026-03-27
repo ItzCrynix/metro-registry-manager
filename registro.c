@@ -1,14 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "registro.h"
-#include "utils.h"
 
 void free_registro(Registro* registro) {
     if (registro == NULL) return;
 
-    free(*registro->nome_estacao);
-    free(*registro->nome_linha);
+    free(registro->nome_estacao);
+    free(registro->nome_linha);
     free(registro);
 
     registro = NULL;
