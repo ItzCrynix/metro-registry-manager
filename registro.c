@@ -46,46 +46,43 @@ Registro* tokenizar_registro(char* buffer) {
     return registro_temporario;
 }
 
-char* int_to_string(int number) {
-    char result[20] = "NULO";
-
-    if (number != -1) {
-        sprintf(result, "%d", number);
-    }
-
-    return result;
+void int_to_string(char* str, int number) {
+    if (number != -1) 
+        str = "NULO";
+    else  
+        sprintf(str, "%d", number);
 }
 
 char* to_string(Registro* registro) {
-    char* formatado = (char*) calloc(100, sizeof(char));
+    char* formatado = (char*) calloc(150, sizeof(char));
+    if (formatado == NULL) {
+        return NULL;
+    }
 
-    char* cod_estacao_formatado = int_to_string(registro->codigo_estacao);
-    char* cod_linha_formatado = int_to_string(registro->codigo_linha);
-    char* cod_prox_estacao_formatado = int_to_string(registro->codigo_proxima_estacao);
-    char* dist_prox_estacao_formatado = int_to_string(registro->distancia_proxima_estacao);
-    char* cod_linha_integra_formatado = int_to_string(registro->codigo_linha_integracao);
-    char* cod_estacao_integra_formatado = int_to_string(registro->codigo_estacao_integracao);
+    char cod_estacao_formatado[20];
+    char cod_linha_formatado[20];
+    char cod_prox_estacao_formatado[20];
+    char dist_prox_estacao_formatado[20];
+    char cod_linha_integra_formatado[20];
+    char cod_estacao_integra_formatado[20];
 
-    string_or_null(registro->nome_estacao);
-    string_or_null(registro->nome_linha);
+    int_to_string(cod_estacao_formatado, registro->codigo_estacao);
+    int_to_string(cod_linha_formatado, registro->codigo_linha);
+    int_to_string(cod_prox_estacao_formatado, registro->codigo_proxima_estacao);
+    int_to_string(dist_prox_estacao_formatado, registro->distancia_proxima_estacao);
+    int_to_string(cod_linha_integra_formatado, registro->codigo_linha_integracao);
+    int_to_string(cod_estacao_integra_formatado, registro->codigo_estacao_integracao);
 
     sprintf(formatado, "%s %s %s %s %s %s %s %s",
         cod_estacao_formatado,
-        registro->nome_estacao,
+        string_or_null(registro->nome_estacao),
         cod_linha_formatado,
-        registro->nome_linha,
+        string_or_null(registro->nome_linha),
         cod_prox_estacao_formatado,
         dist_prox_estacao_formatado,
         cod_linha_integra_formatado,
         cod_estacao_integra_formatado
     );
-
-    free(cod_estacao_formatado);
-    free(cod_linha_formatado);
-    free(cod_prox_estacao_formatado);
-    free(dist_prox_estacao_formatado);
-    free(cod_linha_integra_formatado);
-    free(cod_estacao_integra_formatado);
 
     return formatado;
 }
