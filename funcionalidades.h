@@ -8,6 +8,8 @@
 #define FILE_NOT_FOUND_ERROR -1
 #define MALLOC_ERROR -2
 #define NO_DATA_FOUND_ERROR -3
+#define RRN_NOT_FOUND -3
+#define RRN_REMOVED '1'
 
 /**
  * @brief Escreve um registro novo no arquivo

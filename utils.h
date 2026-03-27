@@ -8,6 +8,8 @@
  */
 int integer_or_null(char* str);
 
+void string_or_null(char* str);
+
 /**
  * @brief Printa na terminal todos os bytes de um arquivo binário
  * @param arquivo_binario O arquivo que será printado
