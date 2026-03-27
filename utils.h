@@ -12,7 +12,7 @@
  */
 int integer_or_null(char* str);
 
-void string_or_null(char* str);
+const char* string_or_null(char* str);
 
 /**
  * @brief Printa na terminal todos os bytes de um arquivo binário
