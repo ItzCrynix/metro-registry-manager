@@ -1,6 +1,11 @@
 #ifndef REGISTRO_H
 #define REGISTRO_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "utils.h"
+
 #define TAM_REGISTRO_DADOS 80
 
 typedef struct registro {
