@@ -9,13 +9,21 @@ Cabecalho* novo_cabecalho() {
     }
 
     // escreve os valores padrões que o cabeçalho deve assumir em um arquivo vazio
-    novo->status = STATUS_CONSISTENT;
+    novo->status = STATUS_INCONSISTENT;
     novo->topo_pilha = -1;
     novo->proximo_rrn = 0;
     novo->numero_estacoes = 0;
     novo->numero_pares_estacoes = 0;
 
     return novo;
+}
+
+void free_cabecalho(Cabecalho* cabecalho) {
+    if (cabecalho == NULL) return;
+
+    free(cabecalho);
+
+    cabecalho = NULL;
 }
 
 void salvar_cabecalho(FILE* arquivo_binario, Cabecalho* cabecalho_binario) {
