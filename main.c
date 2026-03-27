@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "registro.h"
+#include "funcionalidades.h"
 #include "utils.h"
 
 typedef enum opcoes {

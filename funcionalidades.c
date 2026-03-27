@@ -82,27 +82,21 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
 
         salvar_registro_binario(arquivo_binario, novo_registro);
 
-        free(novo_registro->nome_estacao);
-        free(novo_registro->nome_linha);
-        free(novo_registro);
+        free_registro(novo_registro);
     }
 
     // Salva as ultimas alterações feitas do cabeçalho e libera a memória
     cabecalho_binario->status = STATUS_CONSISTENT;
     salvar_cabecalho(arquivo_binario, cabecalho_binario);
-    free(cabecalho_binario);
+    
+    free_cabecalho(cabecalho_binario);
 
     return NO_ERROR;
 }
 
+// Placeholder
 Registro* ler_registro_RRN(FILE* nome_arquivo, int RRN) {
-    // Abre o arquivo no modo escrita/leitura binária
-    FILE* arquivo = fopen(nome_arquivo, MODO_LEITURA_BINARIO);
-
-    // faz alguma coisa
-
-    fclose(arquivo);
-    return 0;
+    return NULL;
 }
 
 int printar_arquivo_binario(FILE* arquivo_binario) {
@@ -131,12 +125,13 @@ int printar_arquivo_binario(FILE* arquivo_binario) {
             continue;
         }
 
+        // formata a string do registro e printa
         char* registro_formatado = to_string(registro_atual);
         printf("%s\n", registro_formatado);
         registros_printados++;
     }
 
-    free(cabecalho_binario);
+    free_cabecalho(cabecalho_binario);
 
     return NO_ERROR;
 }

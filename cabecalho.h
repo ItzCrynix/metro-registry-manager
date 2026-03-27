@@ -21,6 +21,8 @@ typedef struct cabecalho {
  */
 Cabecalho* novo_cabecalho();
 
+void free_cabecalho(Cabecalho* cabecalho);
+
 /**
  * @brief Salva as informações contidas no cabeçalho de um arquivo binário
  * @param arquivo_binario O arquivo que vai ser manipulado
