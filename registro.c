@@ -127,12 +127,39 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
     return 0;
 }
 
-Registro* ler_registro_RRN(char* nome_arquivo, int RRN) {
+Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
     // Abre o arquivo no modo escrita/leitura binária
-    FILE* arquivo = fopen(nome_arquivo, MODO_LEITURA_BINARIO);
-
+    
+    fseek(arquivo_binario, 5, 0);
+    int prox_rrn = 0;
+    fread(&prox_rrn,sizeof(int), 1, arquivo_binario);
+    if(prox_rrn < rrn){
+        return RRN_NOT_FOUND;
+    }
+    int byte_offset = (TAM_REGISTRO_CABECALHO + (TAM_REGISTRO_DADOS * rrn));
     // faz alguma coisa
+    char removido;
+    fseek(arquivo_binario,byte_offset, 0);
 
-    fclose(arquivo);
+    // ver se o arquivo está removido no caso
+  
+    fread(&(removido),sizeof(char), 1, arquivo_binario);
+    if(removido == RRN_REMOVED){
+
+        return NULL;
+
+    } else {
+    Registro* reg = malloc(sizeof(Registro));
+    reg->removido = removido;
+
+    
+    fread(&(reg->proximo_registro), sizeof(int), 1, arquivo_binario);
+    fread(&(reg->codigo_estacao), sizeof(int), 1, arquivo_binario);
+    fread(&(reg->codigo_linha), sizeof(int), 1, arquivo_binario);
+    fread(&(reg->codigo_proxima_estacao), sizeof(int), 1, arquivo_binario);
+    fread(&(reg->distancia_proxima_estacao), sizeof(int), 1, arquivo_binario);
+    fread(&(reg->codigo_linha_integracao), sizeof(int), 1, arquivo_binario);
+    fread(&(reg->codigo_estacao_integracao), sizeof(int), 1, arquivo_binario);
+    fread(&(reg->tamanho_nome_estacao), sizeof(int), 1, arquivo_binario);
     return 0;
 }
