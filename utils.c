@@ -8,6 +8,14 @@ int integer_or_null(char* str) {
     return str == NULL || strcspn(str, "\n\r") == 0 ? -1 : atoi(str);
 }
 
+void string_or_null(char* str) {
+    if (str == NULL || strcspn(str, "\n\r") == 0) {
+        str = strdup("NULO");
+    }
+
+    return str;
+}
+
 void binarioNaTela(FILE *arquivo_binario) {
     if (arquivo_binario == NULL) return;
 
