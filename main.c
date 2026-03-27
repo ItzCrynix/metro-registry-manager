@@ -14,6 +14,9 @@ typedef enum opcoes {
 
 void csv_para_binario(char* nome_arquivo_csv, char* nome_arquivo_binario);
 
+int buscar_registro_rrn(char *nome_arquivo_binario, int rrn);
+
+
 int main() {
     while (1) {
         int opcao;
@@ -31,6 +34,10 @@ int main() {
             case BUSCAR_REGISTROS:
                 break;
             case BUSCAR_REGISTROS_RRN:
+            char arquivo[100];
+            int rrn = 0;
+            scanf("%s %d",arquivo, &rrn);
+            buscar_registro_rrn(arquivo,rrn);
                 break;
             case SAIR_PROGRAMA:
                 exit(0);
@@ -52,4 +59,15 @@ void csv_para_binario(char* nome_arquivo_csv, char* nome_arquivo_binario) {
 
     fclose(arquivo_csv);
     fclose(arquivo_binario);
+}
+
+int buscar_registro_rrn(char *nome_arquivo_binario, int rrn){
+ FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
+    if (arquivo_binario = NULL) {
+        return FILE_NOT_FOUND_ERROR;
+    }
+
+
+    
+
 }

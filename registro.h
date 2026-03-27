@@ -7,6 +7,8 @@
 
 #define FILE_NOT_FOUND_ERROR -1
 #define MALLOC_ERROR -2
+#define RRN_NOT_FOUND -1
+#define RRN_REMOVED 0
 
 typedef struct registro {
     char removido;
