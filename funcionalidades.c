@@ -63,10 +63,10 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
     // Descarta a primeira linha, que contem o nome das colunas
     fgets(buffer, sizeof(buffer), arquivo_csv);
 
-    Registro* novo_registro;
+    int qtd_registros = 0;
     // Lê o arquivo csv linha por linha
     while(fgets(buffer, sizeof(buffer), arquivo_csv)) {
-        novo_registro = tokenizar_registro(buffer);
+        Registro* novo_registro = tokenizar_registro(buffer);
         if (novo_registro == NULL) {
             return MALLOC_ERROR;
         }
@@ -76,12 +76,13 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
         novo_registro->proximo_registro = cabecalho_binario->topo_pilha;
 
         salvar_registro_binario(arquivo_binario, novo_registro);
+        qtd_registros++;
+
+        free_registro(novo_registro);
     }
-
-    free_registro(novo_registro);
-
     // Salva as ultimas alterações feitas do cabeçalho e libera a memória
     cabecalho_binario->status = STATUS_CONSISTENT;
+    cabecalho_binario->proximo_rrn = qtd_registros;
     salvar_cabecalho(arquivo_binario, cabecalho_binario);
     
     free_cabecalho(cabecalho_binario);
@@ -91,7 +92,14 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
 
 // Placeholder
 Registro* ler_registro_RRN(FILE* nome_arquivo, int RRN) {
-    return NULL;
+    Registro* novo = (Registro*) malloc(sizeof(Registro));
+    if (!novo) {
+        return NULL;
+    }
+
+    novo->codigo_estacao_integracao = 10;
+
+    return novo;
 }
 
 int printar_arquivo_binario(FILE* arquivo_binario) {
@@ -104,17 +112,23 @@ int printar_arquivo_binario(FILE* arquivo_binario) {
         return MALLOC_ERROR;
     }
 
+    printf("Cabecalho: %c %d %d %d %d\n",
+        cabecalho_binario->status,
+        cabecalho_binario->topo_pilha,
+        cabecalho_binario->proximo_rrn,
+        cabecalho_binario->numero_estacoes,
+        cabecalho_binario->numero_pares_estacoes
+    );
+
     // Caso nenhum registro tenha sido escrito no arquivo ainda
     if (cabecalho_binario->proximo_rrn == 0) {
         return NO_DATA_FOUND_ERROR;
     }
 
     int RRN_atual = 0;
-    int registros_printados = 0;
 
-    Registro* registro_atual;
     while (RRN_atual < cabecalho_binario->proximo_rrn) {
-        registro_atual = ler_registro_RRN(arquivo_binario, RRN_atual++);
+        Registro* registro_atual = ler_registro_RRN(arquivo_binario, RRN_atual++);
 
         // Caso tenha registro excluido
         if (registro_atual == NULL) {
@@ -124,10 +138,10 @@ int printar_arquivo_binario(FILE* arquivo_binario) {
         // formata a string do registro e printa
         char* registro_formatado = to_string(registro_atual);
         printf("%s\n", registro_formatado);
-        registros_printados++;
+
+        free_registro(registro_atual);
     }
 
-    free_registro(registro_atual);
     free_cabecalho(cabecalho_binario);
 
     return NO_ERROR;

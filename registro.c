@@ -3,8 +3,16 @@
 void free_registro(Registro* registro) {
     if (registro == NULL) return;
 
-    free(registro->nome_estacao);
-    free(registro->nome_linha);
+    if (registro->nome_estacao != NULL) {
+        free(registro->nome_estacao);
+        registro->nome_estacao = NULL;
+    }
+
+    if (registro->nome_linha != NULL) {
+        free(registro->nome_linha);
+        registro->nome_linha = NULL;
+    }
+
     free(registro);
 
     registro = NULL;
@@ -48,8 +56,6 @@ Registro* tokenizar_registro(char* buffer) {
 
 void int_to_string(char* str, int number) {
     if (number != -1) 
-        str = "NULO";
-    else  
         sprintf(str, "%d", number);
 }
 
@@ -59,12 +65,12 @@ char* to_string(Registro* registro) {
         return NULL;
     }
 
-    char cod_estacao_formatado[20];
-    char cod_linha_formatado[20];
-    char cod_prox_estacao_formatado[20];
-    char dist_prox_estacao_formatado[20];
-    char cod_linha_integra_formatado[20];
-    char cod_estacao_integra_formatado[20];
+    char cod_estacao_formatado[20] = "NULO";
+    char cod_linha_formatado[20] = "NULO";
+    char cod_prox_estacao_formatado[20] = "NULO";
+    char dist_prox_estacao_formatado[20] = "NULO";
+    char cod_linha_integra_formatado[20] = "NULO";
+    char cod_estacao_integra_formatado[20] = "NULO";
 
     int_to_string(cod_estacao_formatado, registro->codigo_estacao);
     int_to_string(cod_linha_formatado, registro->codigo_linha);
