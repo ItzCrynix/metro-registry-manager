@@ -4,7 +4,7 @@
 
 Cabecalho* novo_cabecalho() {
     Cabecalho* novo = (Cabecalho*) malloc(sizeof(Cabecalho));
-    if (novo == NULL) {
+    if (!novo) {
         return NULL;
     }
 
