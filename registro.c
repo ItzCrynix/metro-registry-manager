@@ -140,12 +140,11 @@ void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
 
 Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
     int byte_offset = (TAM_REGISTRO_CABECALHO + (TAM_REGISTRO_DADOS * rrn));
+    fseek(arquivo_binario, byte_offset, SEEK_SET);
 
-    fseek(arquivo_binario,byte_offset, 0);
-
-    char removido;
-    fread(&(removido),sizeof(char), 1, arquivo_binario);
-    if(removido == STATUS_REMOVED){
+    char removido = STATUS_REMOVED;
+    fread(&(removido), sizeof(char), 1, arquivo_binario);
+    if(removido == STATUS_REMOVED) {
         return NULL;
     }
     
@@ -167,13 +166,15 @@ Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
 
     // Leitura dos campos variáveis
     fread(&(registro_encontrado->tamanho_nome_estacao), sizeof(int), 1, arquivo_binario);
-
-    registro_encontrado->nome_estacao = (char*) calloc(registro_encontrado->tamanho_nome_estacao, sizeof(char));
+    if (registro_encontrado->tamanho_nome_estacao > 0) {
+        registro_encontrado->nome_estacao = (char*) calloc(registro_encontrado->tamanho_nome_estacao, sizeof(char));
+    }
     fread(registro_encontrado->nome_estacao, sizeof(char), registro_encontrado->tamanho_nome_estacao, arquivo_binario);
     
     fread(&(registro_encontrado->tamanho_nome_linha), sizeof(int), 1, arquivo_binario);
-
-    registro_encontrado->nome_linha = (char*) calloc(registro_encontrado->tamanho_nome_linha, sizeof(char));
+    if (registro_encontrado->tamanho_nome_linha > 0) {
+        registro_encontrado->nome_linha = (char*) calloc(registro_encontrado->tamanho_nome_linha, sizeof(char));
+    }
     fread(registro_encontrado->nome_linha, sizeof(char), registro_encontrado->tamanho_nome_linha, arquivo_binario);
 
     return registro_encontrado;
