@@ -139,22 +139,10 @@ void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
 }
 
 Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
-    // Posiciona o ponteiro do arquivo no dado
-    fseek(arquivo_binario, 5, 0);
-
-    int prox_rrn = 0;
-    fread(&prox_rrn,sizeof(int), 1, arquivo_binario);
-
-    // O RRN não está dentro do range permitido
-    if(rrn < 0 || rrn >= prox_rrn){
-        return NULL;
-    }
-
     int byte_offset = (TAM_REGISTRO_CABECALHO + (TAM_REGISTRO_DADOS * rrn));
 
     fseek(arquivo_binario,byte_offset, 0);
 
-    // 
     char removido;
     fread(&(removido),sizeof(char), 1, arquivo_binario);
     if(removido == STATUS_REMOVED){
