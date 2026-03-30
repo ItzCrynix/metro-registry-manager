@@ -15,8 +15,6 @@
 #define FILE_NOT_FOUND_ERROR -1
 #define MALLOC_ERROR -2
 #define NO_DATA_FOUND_ERROR -3
-#define RRN_NOT_FOUND -3
-#define RRN_REMOVED '1'
 
 /**
  * @brief Escreve um registro novo no arquivo
@@ -26,17 +24,11 @@
 int escrever_registros_csv(FILE* nome_arquivo_csv, FILE* nome_arquivo_binario);
 
 /**
- * @brief Lê um registro guardado no arquivo binário baseado no RRN (Relative Record Number)
- * @param nome_arquivo nome do arquivo binário que será usado
- * @param RRN Relative Record Number, indica qual "linha" dos registros vai ser lida
- * @return Um registro, caso encontre, ou NULL
- */
-Registro* ler_registro_RRN(FILE* nome_arquivo, int RRN);
-
-/**
  * @brief Lê um arquivo binário e printa no terminal
  * @param arquivo_binario O arquivo que será lido
  */
 int printar_arquivo_binario(FILE* arquivo_binario);
+
+int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn);
 
 #endif
