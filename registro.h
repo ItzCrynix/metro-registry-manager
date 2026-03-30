@@ -25,8 +25,27 @@ typedef struct registro {
     char* nome_linha;
 } Registro;
 
-void free_registro(Registro* registro);
+/**
+ * @brief Libera a memória de um registro
+ * @param registro O endereço que será liberado
+ */
+void free_registro(Registro** registro);
+
+/**
+ * @brief Transforma uma string em um novo registro
+ * @param buffer A cadeia de caracteres que contem o novo registro
+ * @return Um registro contendo todas as informações do buffer
+ */
 Registro* tokenizar_registro(char* buffer);
+
+/**
+ * @brief Transforma os dados de um registro em string
+ */
 char* to_string(Registro* registro);
+
+/**
+ * @brief Salva as informações de um registro em um arquivo binário
+ */
+void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro);
 
 #endif

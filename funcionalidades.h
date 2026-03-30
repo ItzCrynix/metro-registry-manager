@@ -33,6 +33,10 @@ int escrever_registros_csv(FILE* nome_arquivo_csv, FILE* nome_arquivo_binario);
  */
 Registro* ler_registro_RRN(FILE* nome_arquivo, int RRN);
 
+/**
+ * @brief Lê um arquivo binário e printa no terminal
+ * @param arquivo_binario O arquivo que será lido
+ */
 int printar_arquivo_binario(FILE* arquivo_binario);
 
 #endif
