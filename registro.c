@@ -104,6 +104,7 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
     // Descarta a primeira linha, que contem o nome das colunas
     fgets(buffer, sizeof(buffer), arquivo_csv);
 
+    int registros_realizados = 0;
     // Lê o arquivo csv linha por linha
     while(fgets(buffer, sizeof(buffer), arquivo_csv)) {
         Registro* novo_registro = tokenizar_registro(buffer);
@@ -117,10 +118,12 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
 
         salvar_registro_binario(arquivo_binario, novo_registro);
 
+        registros_realizados++;
         free(novo_registro);
     }
 
     // Salva as ultimas alterações feitas do cabeçalho
+    cabecalho_binario->proximo_rrn = registros_realizados;
     salvar_cabecalho(arquivo_binario, cabecalho_binario);
 
     free(cabecalho_binario);
@@ -128,38 +131,67 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
 }
 
 Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
-    // Abre o arquivo no modo escrita/leitura binária
-    
+    // Posiciona o ponteiro do arquivo no dado
     fseek(arquivo_binario, 5, 0);
+
     int prox_rrn = 0;
     fread(&prox_rrn,sizeof(int), 1, arquivo_binario);
-    if(prox_rrn < rrn){
-        return RRN_NOT_FOUND;
+
+    // O RRN não está dentro do range permitido
+    if(rrn < 0 || rrn >= prox_rrn){
+        return NULL;
     }
+
     int byte_offset = (TAM_REGISTRO_CABECALHO + (TAM_REGISTRO_DADOS * rrn));
-    // faz alguma coisa
-    char removido;
+
     fseek(arquivo_binario,byte_offset, 0);
 
-    // ver se o arquivo está removido no caso
-  
+    // 
+    char removido;
     fread(&(removido),sizeof(char), 1, arquivo_binario);
     if(removido == RRN_REMOVED){
-
         return NULL;
-
-    } else {
-    Registro* reg = malloc(sizeof(Registro));
-    reg->removido = removido;
-
+    }
     
-    fread(&(reg->proximo_registro), sizeof(int), 1, arquivo_binario);
-    fread(&(reg->codigo_estacao), sizeof(int), 1, arquivo_binario);
-    fread(&(reg->codigo_linha), sizeof(int), 1, arquivo_binario);
-    fread(&(reg->codigo_proxima_estacao), sizeof(int), 1, arquivo_binario);
-    fread(&(reg->distancia_proxima_estacao), sizeof(int), 1, arquivo_binario);
-    fread(&(reg->codigo_linha_integracao), sizeof(int), 1, arquivo_binario);
-    fread(&(reg->codigo_estacao_integracao), sizeof(int), 1, arquivo_binario);
-    fread(&(reg->tamanho_nome_estacao), sizeof(int), 1, arquivo_binario);
+    Registro* registro_encontrado = (Registro*) malloc(sizeof(Registro));
+    if (registro_encontrado == NULL) {
+        return NULL;
+    }
+
+    registro_encontrado->removido = removido;
+
+    // Leirura dos campos fixos
+    fread(&(registro_encontrado->proximo_registro), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->codigo_estacao), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->codigo_linha), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->codigo_proxima_estacao), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->distancia_proxima_estacao), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->codigo_linha_integracao), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->codigo_estacao_integracao), sizeof(int), 1, arquivo_binario);
+
+    // Leitura dos campos variáveis
+    fread(&(registro_encontrado->tamanho_nome_estacao), sizeof(int), 1, arquivo_binario);
+
+    registro_encontrado->nome_estacao = (char*) calloc(registro_encontrado->tamanho_nome_estacao, sizeof(char));
+    fread(registro_encontrado->nome_estacao, sizeof(char), registro_encontrado->tamanho_nome_estacao, arquivo_binario);
+    
+    fread(&(registro_encontrado->tamanho_nome_linha), sizeof(int), 1, arquivo_binario);
+
+    registro_encontrado->nome_linha = (char*) calloc(registro_encontrado->tamanho_nome_linha, sizeof(char));
+    fread(registro_encontrado->nome_linha, sizeof(char), registro_encontrado->tamanho_nome_linha, arquivo_binario);
+
+    return registro_encontrado;
+}
+
+int buscar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn) {
+    if (arquivo_binario == NULL) {
+        return FILE_NOT_FOUND_ERROR;
+    }
+
+    *registro = ler_registro_RRN(arquivo_binario, rrn);
+    if (registro == NULL) {
+        return RRN_NOT_FOUND;
+    }
+
     return 0;
 }
