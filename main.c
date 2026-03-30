@@ -13,9 +13,7 @@ typedef enum opcoes {
 } Opcoes;
 
 void csv_para_binario(char* nome_arquivo_csv, char* nome_arquivo_binario);
-
-int buscar_registro_rrn(char *nome_arquivo_binario, int rrn);
-
+void buscar_registro_rrn();
 
 int main() {
     while (1) {
@@ -34,13 +32,10 @@ int main() {
             case BUSCAR_REGISTROS:
                 break;
             case BUSCAR_REGISTROS_RRN:
-            char arquivo[100];
-            int rrn = 0;
-            scanf("%s %d",arquivo, &rrn);
-            buscar_registro_rrn(arquivo,rrn);
+                buscar_registro_rrn();
                 break;
             case SAIR_PROGRAMA:
-                exit(0);
+                exit(EXIT_SUCCESS);
                 break;
             default:
                 printf("Operacao nao suportada!\n");
@@ -61,13 +56,34 @@ void csv_para_binario(char* nome_arquivo_csv, char* nome_arquivo_binario) {
     fclose(arquivo_binario);
 }
 
-int buscar_registro_rrn(char *nome_arquivo_binario, int rrn){
- FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
-    if (arquivo_binario = NULL) {
-        return FILE_NOT_FOUND_ERROR;
+void buscar_registro_rrn(){
+    char nome_arquivo_binario[100];
+    int rrn = 0;
+    scanf("%s %d", nome_arquivo_binario, &rrn);
+
+    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
+    
+    Registro* registro; 
+    int erro = buscar_registro_RRN(arquivo_binario, &registro, rrn);
+
+    if (erro == FILE_NOT_FOUND_ERROR) {
+        printf("Falha no processamento do arquivo.\n");
+    }
+    else if (erro == RRN_NOT_FOUND) {
+        printf("Registro inexistente.\n");
+    } else {
+        // TODO: mudar esse print pra usar o to_string
+        printf("%d %s %d %s %d %d %d %d\n", 
+            registro->codigo_estacao,
+            registro->nome_estacao,
+            registro->codigo_linha,
+            registro->nome_linha,
+            registro->codigo_proxima_estacao,
+            registro->distancia_proxima_estacao,
+            registro->codigo_linha_integracao,
+            registro->codigo_estacao_integracao
+        );
     }
 
-
-    
-
+    fclose(arquivo_binario);
 }

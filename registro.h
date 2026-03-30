@@ -7,8 +7,8 @@
 
 #define FILE_NOT_FOUND_ERROR -1
 #define MALLOC_ERROR -2
-#define RRN_NOT_FOUND -1
-#define RRN_REMOVED 0
+#define RRN_NOT_FOUND -3
+#define RRN_REMOVED '1'
 
 typedef struct registro {
     char removido;
@@ -40,6 +40,8 @@ int escrever_registros_csv(FILE* nome_arquivo_csv, FILE* nome_arquivo_binario);
  * @param RRN Relative Record Number, indica qual "linha" dos registros vai ser lida
  * @return Um registro, caso encontre, ou NULL
  */
-Registro* ler_registro_RRN(char* nome_arquivo, int RRN);
+Registro* ler_registro_RRN(FILE* nome_arquivo, int RRN);
+
+int buscar_registro_RRN(FILE* nome_arquivo, Registro** registro, int RRN);
 
 #endif
