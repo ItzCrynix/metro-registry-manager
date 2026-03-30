@@ -80,20 +80,10 @@ void buscar_registro_rrn(){
     if (erro == FILE_NOT_FOUND_ERROR) {
         printf("Falha no processamento do arquivo.\n");
     }
-    else if (erro == NO_DATA_FOUND_ERROR) {
+    else if (erro == NO_DATA_FOUND_ERROR || erro == INVALID_RRN_ERROR) {
         printf("Registro inexistente.\n");
     } else {
-        // TODO: mudar esse print pra usar o to_string
-        printf("%d %s %d %s %d %d %d %d\n", 
-            registro->codigo_estacao,
-            registro->nome_estacao,
-            registro->codigo_linha,
-            registro->nome_linha,
-            registro->codigo_proxima_estacao,
-            registro->distancia_proxima_estacao,
-            registro->codigo_linha_integracao,
-            registro->codigo_estacao_integracao
-        );
+        printf("%s\n", to_string(registro));
     }
 
     fclose(arquivo_binario);
