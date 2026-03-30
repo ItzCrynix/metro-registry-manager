@@ -45,18 +45,6 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
     return NO_ERROR;
 }
 
-// Placeholder
-Registro* ler_registro_RRN(FILE* nome_arquivo, int RRN) {
-    Registro* novo = (Registro*) malloc(sizeof(Registro));
-    if (!novo) {
-        return NULL;
-    }
-
-    novo->codigo_estacao_integracao = 10;
-
-    return novo;
-}
-
 int printar_arquivo_binario(FILE* arquivo_binario) {
     if (arquivo_binario == NULL) {
         return FILE_NOT_FOUND_ERROR;
@@ -93,4 +81,17 @@ int printar_arquivo_binario(FILE* arquivo_binario) {
     free_cabecalho(&cabecalho_binario);
 
     return NO_ERROR;
+}
+
+int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn) {
+    if (arquivo_binario == NULL) {
+        return FILE_NOT_FOUND_ERROR;
+    }
+
+    *registro = ler_registro_RRN(arquivo_binario, rrn);
+    if (registro == NULL) {
+        return NO_DATA_FOUND_ERROR;
+    }
+
+    return 0;
 }

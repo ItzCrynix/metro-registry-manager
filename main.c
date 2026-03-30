@@ -75,12 +75,12 @@ void buscar_registro_rrn(){
     FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
     
     Registro* registro; 
-    int erro = buscar_registro_RRN(arquivo_binario, &registro, rrn);
+    int erro = procurar_registro_RRN(arquivo_binario, &registro, rrn);
 
     if (erro == FILE_NOT_FOUND_ERROR) {
         printf("Falha no processamento do arquivo.\n");
     }
-    else if (erro == RRN_NOT_FOUND) {
+    else if (erro == NO_DATA_FOUND_ERROR) {
         printf("Registro inexistente.\n");
     } else {
         // TODO: mudar esse print pra usar o to_string

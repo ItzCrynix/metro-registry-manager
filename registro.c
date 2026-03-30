@@ -137,3 +137,56 @@ void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
             fwrite(&placeholder, sizeof(char), 1, arquivo_binario);
     }
 }
+
+Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
+    // Posiciona o ponteiro do arquivo no dado
+    fseek(arquivo_binario, 5, 0);
+
+    int prox_rrn = 0;
+    fread(&prox_rrn,sizeof(int), 1, arquivo_binario);
+
+    // O RRN não está dentro do range permitido
+    if(rrn < 0 || rrn >= prox_rrn){
+        return NULL;
+    }
+
+    int byte_offset = (TAM_REGISTRO_CABECALHO + (TAM_REGISTRO_DADOS * rrn));
+
+    fseek(arquivo_binario,byte_offset, 0);
+
+    // 
+    char removido;
+    fread(&(removido),sizeof(char), 1, arquivo_binario);
+    if(removido == STATUS_REMOVED){
+        return NULL;
+    }
+    
+    Registro* registro_encontrado = (Registro*) malloc(sizeof(Registro));
+    if (registro_encontrado == NULL) {
+        return NULL;
+    }
+
+    registro_encontrado->removido = removido;
+
+    // Leirura dos campos fixos
+    fread(&(registro_encontrado->proximo_registro), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->codigo_estacao), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->codigo_linha), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->codigo_proxima_estacao), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->distancia_proxima_estacao), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->codigo_linha_integracao), sizeof(int), 1, arquivo_binario);
+    fread(&(registro_encontrado->codigo_estacao_integracao), sizeof(int), 1, arquivo_binario);
+
+    // Leitura dos campos variáveis
+    fread(&(registro_encontrado->tamanho_nome_estacao), sizeof(int), 1, arquivo_binario);
+
+    registro_encontrado->nome_estacao = (char*) calloc(registro_encontrado->tamanho_nome_estacao, sizeof(char));
+    fread(registro_encontrado->nome_estacao, sizeof(char), registro_encontrado->tamanho_nome_estacao, arquivo_binario);
+    
+    fread(&(registro_encontrado->tamanho_nome_linha), sizeof(int), 1, arquivo_binario);
+
+    registro_encontrado->nome_linha = (char*) calloc(registro_encontrado->tamanho_nome_linha, sizeof(char));
+    fread(registro_encontrado->nome_linha, sizeof(char), registro_encontrado->tamanho_nome_linha, arquivo_binario);
+
+    return registro_encontrado;
+}
