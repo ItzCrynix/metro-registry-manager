@@ -102,5 +102,5 @@ int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn) {
         return NO_DATA_FOUND_ERROR;
     }
 
-    return 0;
+    return NO_ERROR;
 }
