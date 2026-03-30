@@ -1,21 +1,22 @@
 #include "registro.h"
 
-void free_registro(Registro* registro) {
-    if (registro == NULL) return;
+void free_registro(Registro** registro) {
+    if (*registro == NULL) return;
 
-    if (registro->nome_estacao != NULL) {
-        free(registro->nome_estacao);
-        registro->nome_estacao = NULL;
+    // As strings são alocadas separadamente, então é necessário desalocar
+    if ((*registro)->nome_estacao != NULL) {
+        free((*registro)->nome_estacao);
+        (*registro)->nome_estacao = NULL;
     }
 
-    if (registro->nome_linha != NULL) {
-        free(registro->nome_linha);
-        registro->nome_linha = NULL;
+    if ((*registro)->nome_linha != NULL) {
+        free((*registro)->nome_linha);
+        (*registro)->nome_linha = NULL;
     }
 
-    free(registro);
+    free(*registro);
 
-    registro = NULL;
+    *registro = NULL;
 }
 
 Registro* tokenizar_registro(char* buffer) {
@@ -65,6 +66,7 @@ char* to_string(Registro* registro) {
         return NULL;
     }
 
+    // instancia todos os campos com valor padrão
     char cod_estacao_formatado[20] = "NULO";
     char cod_linha_formatado[20] = "NULO";
     char cod_prox_estacao_formatado[20] = "NULO";
@@ -91,4 +93,47 @@ char* to_string(Registro* registro) {
     );
 
     return formatado;
+}
+
+void salvar_campos_fixos(FILE* arquivo_binario, Registro* novo_registro) {
+    // status e informações do próximo registro na pilha
+    fwrite(&novo_registro->removido, sizeof(char), 1, arquivo_binario);
+    fwrite(&novo_registro->proximo_registro, sizeof(int), 1, arquivo_binario);
+
+    // informações das estações
+    fwrite(&novo_registro->codigo_estacao, sizeof(int), 1, arquivo_binario);
+    fwrite(&novo_registro->codigo_linha, sizeof(int), 1, arquivo_binario);
+    fwrite(&novo_registro->codigo_proxima_estacao, sizeof(int), 1, arquivo_binario);
+    fwrite(&novo_registro->distancia_proxima_estacao, sizeof(int), 1, arquivo_binario);
+    fwrite(&novo_registro->codigo_linha_integracao, sizeof(int), 1, arquivo_binario);
+    fwrite(&novo_registro->codigo_estacao_integracao, sizeof(int), 1, arquivo_binario);
+}
+
+void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
+    long inicio_registro = ftell(arquivo_binario);
+
+    salvar_campos_fixos(arquivo_binario, novo_registro);
+
+    // Salva os dois campos de tamanho variável
+    fwrite(&novo_registro->tamanho_nome_estacao, sizeof(int), 1, arquivo_binario);
+    if (novo_registro->tamanho_nome_estacao > 0) {
+        fwrite(novo_registro->nome_estacao, sizeof(char), novo_registro->tamanho_nome_estacao, arquivo_binario);
+    }
+
+    fwrite(&novo_registro->tamanho_nome_linha, sizeof(int), 1, arquivo_binario);
+    if (novo_registro->tamanho_nome_linha > 0) {
+        fwrite(novo_registro->nome_linha, sizeof(char), novo_registro->tamanho_nome_linha, arquivo_binario);
+    }
+
+    long final_registro = ftell(arquivo_binario);
+
+    // Seria possível calcular os bytes usando sizeof(...) hardcoded, mas o ftell deixa mais intuitivo
+    int bytes_remanescentes = TAM_REGISTRO_DADOS - (final_registro - inicio_registro);
+
+    // escreve o final com $, caso sobre bytes no registro
+    if (bytes_remanescentes > 0) {
+        char placeholder = '$';
+        for (int i = 0; i < bytes_remanescentes; i++)
+            fwrite(&placeholder, sizeof(char), 1, arquivo_binario);
+    }
 }
