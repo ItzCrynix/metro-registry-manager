@@ -173,7 +173,7 @@ Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
     
     fread(&(registro_encontrado->tamanho_nome_linha), sizeof(int), 1, arquivo_binario);
     if (registro_encontrado->tamanho_nome_linha > 0) {
-        registro_encontrado->nome_linha = (char*) calloc(registro_encontrado->tamanho_nome_linha, sizeof(char));
+        registro_encontrado->nome_linha = (char*) calloc(registro_encontrado->tamanho_nome_linha + 1, sizeof(char));
     }
     fread(registro_encontrado->nome_linha, sizeof(char), registro_encontrado->tamanho_nome_linha, arquivo_binario);
 

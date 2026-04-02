@@ -93,12 +93,13 @@ int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn) {
         return MALLOC_ERROR;
     }
 
-    if (rrn < 0 || rrn >= cabecalho_binario->proximo_rrn) {
+ if (rrn < 0 || rrn >= cabecalho_binario->proximo_rrn) {
+        free_cabecalho(&cabecalho_binario);
         return INVALID_RRN_ERROR;
     }
 
     *registro = ler_registro_RRN(arquivo_binario, rrn);
-    if (registro == NULL) {
+    if (*registro == NULL) {
         return NO_DATA_FOUND_ERROR;
     }
 
