@@ -32,4 +32,6 @@ int printar_arquivo_binario(FILE* arquivo_binario);
 
 int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn);
 
+int buscar_registro_Filtro(const char* nome_arquivo_binario, int quantidade_buscas);
+
 #endif
