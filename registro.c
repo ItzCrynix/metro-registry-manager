@@ -1,4 +1,19 @@
 #include "registro.h"
+#include <ctype.h>
+
+static int iguais_sem_case(const char* a, const char* b) {
+    if (a == NULL || b == NULL) return 0;
+
+    while (*a != '\0' && *b != '\0') {
+        if (tolower((unsigned char) *a) != tolower((unsigned char) *b)) {
+            return 0;
+        }
+        a++;
+        b++;
+    }
+
+    return *a == '\0' && *b == '\0';
+}
 
 void free_registro(Registro** registro) {
     if (*registro == NULL) return;
@@ -178,4 +193,30 @@ Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
     fread(registro_encontrado->nome_linha, sizeof(char), registro_encontrado->tamanho_nome_linha, arquivo_binario);
 
     return registro_encontrado;
+}
+
+int passou_no_Filtro(int quantidade_campos, char** campos, char** valores, Registro* reg) {
+    for (int i = 0; i < quantidade_campos; i++) {
+        if (iguais_sem_case(campos[i], "CodEstacao")) {
+            if (reg->codigo_estacao != atoi(valores[i])) return 0;
+        } else if (iguais_sem_case(campos[i], "NomeEstacao")) {
+            if (reg->nome_estacao == NULL || !iguais_sem_case(reg->nome_estacao, valores[i])) return 0;
+        } else if (iguais_sem_case(campos[i], "CodLinha")) {
+            if (reg->codigo_linha != atoi(valores[i])) return 0;
+        } else if (iguais_sem_case(campos[i], "NomeLinha")) {
+            if (reg->nome_linha == NULL || !iguais_sem_case(reg->nome_linha, valores[i])) return 0;
+        } else if (iguais_sem_case(campos[i], "CodProxEst")) {
+            if (reg->codigo_proxima_estacao != atoi(valores[i])) return 0;
+        } else if (iguais_sem_case(campos[i], "DistanciaProxEst")) {
+            if (reg->distancia_proxima_estacao != atoi(valores[i])) return 0;
+        } else if (iguais_sem_case(campos[i], "CodLinhaInteg")) {
+            if (reg->codigo_linha_integracao != atoi(valores[i])) return 0;
+        } else if (iguais_sem_case(campos[i], "CodEstacaoInteg")) {
+            if (reg->codigo_estacao_integracao != atoi(valores[i])) return 0;
+        } else {
+            return 0;
+        }
+    }
+
+    return 1;
 }

@@ -75,10 +75,19 @@ void buscar_registro_filtro() {
 
     // 1. Lê os dados iniciais
     scanf("%s %d", nome_arquivo_binario, &quantidade_buscas);
+    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
+    Cabecalho* cabecalho = ler_cabecalho_binario(arquivo_binario);
+    if (cabecalho == NULL) {
+        fclose(arquivo_binario);
+        printf("Falha no processamento do arquivo.\n");
+    }
 
-    int erro = buscar_registro_Filtro(nome_arquivo_binario, quantidade_buscas);
+    int erro = buscar_registro_Filtro(nome_arquivo_binario, quantidade_buscas, arquivo_binario,cabecalho);
+    
+    
     if (erro == FILE_NOT_FOUND_ERROR || erro == MALLOC_ERROR) {
         printf("Falha no processamento do arquivo.\n");
+        fclose(arquivo_binario);
     }
 }
 

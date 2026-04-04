@@ -19,5 +19,6 @@ const char* string_or_null(char* str);
  * @param arquivo_binario O arquivo que será printado
  */
 void binarioNaTela(FILE *arquivo_binario);
+void ScanQuoteString(char *str);
 
 #endif

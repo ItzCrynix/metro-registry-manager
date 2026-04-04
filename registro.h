@@ -62,4 +62,8 @@ void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro);
  */
 Registro* ler_registro_RRN(FILE* nome_arquivo, int RRN);
 
+int passou_no_Filtro(int quantidade_campos, char** campos, char** valores, Registro* reg);
+
+
+
 #endif
