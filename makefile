@@ -1,5 +1,8 @@
-run: build
+run:
 	./main
 
-build:
+all:
 	gcc *.c -o main -w
+
+clean:
+	rm *.o *.exe *.out

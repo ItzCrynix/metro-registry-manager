@@ -6,7 +6,11 @@
 
 
 int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
-    if (arquivo_binario == NULL || arquivo_csv == NULL) {
+    if (arquivo_binario == NULL) {
+        return FILE_NOT_FOUND_ERROR;
+    }
+
+    if (arquivo_csv == NULL) {
         return FILE_NOT_FOUND_ERROR;
     }
 
