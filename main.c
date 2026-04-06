@@ -30,9 +30,9 @@ int main() {
             ler_arquivo_binario();
             break;
 
-            case BUSCAR_REGISTROS:
+        case BUSCAR_REGISTROS:
             buscar_registro_filtro();
-                break;
+            break;
                 
         case BUSCAR_REGISTRO_RRN:
             buscar_registro_rrn();
