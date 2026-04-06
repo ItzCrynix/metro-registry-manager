@@ -14,11 +14,8 @@ int integer_or_null(char* str);
 
 const char* string_or_null(char* str);
 
-/**
- * @brief Printa na terminal todos os bytes de um arquivo binário
- * @param arquivo O arquivo que será printado
- */
 void ScanQuoteString(char *str);
+
 void BinarioNaTela(char *arquivo);
 
 #endif
