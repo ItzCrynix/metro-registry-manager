@@ -18,36 +18,36 @@ void csv_para_binario();
 void ler_arquivo_binario();
 
 int main() {
-    while (1) {
-        int opcao;
-        scanf("%d", &opcao);
+    int opcao;
+    scanf("%d", &opcao);
 
-        switch (opcao) {
-            case CONVERTER_CSV_BIN:
-                csv_para_binario();
-                break;
+    switch (opcao) {
+        case CONVERTER_CSV_BIN:
+            csv_para_binario();
+            break;
 
-            case LER_BINARIO:
-                ler_arquivo_binario();
-                break;
+        case LER_BINARIO:
+            ler_arquivo_binario();
+            break;
 
             case BUSCAR_REGISTROS:
             buscar_registro_filtro();
                 break;
                 
-            case BUSCAR_REGISTRO_RRN:
-                buscar_registro_rrn();
-                break;
+        case BUSCAR_REGISTRO_RRN:
+            buscar_registro_rrn();
+            break;
 
-            case SAIR_PROGRAMA:
-                exit(EXIT_SUCCESS);
-                break;
+        case SAIR_PROGRAMA:
+            exit(EXIT_SUCCESS);
+            break;
 
-            default:
-                printf("Operacao nao suportada!\n");
-                break;
-        }
+        default:
+            printf("Operacao nao suportada!\n");
+            break;
     }
+
+    return 0;
 }
 
 //
@@ -65,8 +65,13 @@ void csv_para_binario() {
         printf("Falha no processamento do arquivo.\n");
     }
 
-    fclose(arquivo_csv);
-    fclose(arquivo_binario);
+    if (arquivo_csv != NULL)
+        fclose(arquivo_csv);
+
+    if (arquivo_binario != NULL)
+        fclose(arquivo_binario);
+
+    BinarioNaTela(nome_arquivo_binario);
 }
 
 void buscar_registro_filtro() {
@@ -116,7 +121,8 @@ void buscar_registro_rrn(){
         free_registro(&registro);
     }
 
-    fclose(arquivo_binario);
+    if (arquivo_binario != NULL)
+        fclose(arquivo_binario);
 }
 
 void ler_arquivo_binario() {
@@ -133,5 +139,6 @@ void ler_arquivo_binario() {
         printf("Falha no processamento do arquivo.\n");
     }
 
-    fclose(arquivo_binario);
+    if (arquivo_binario != NULL)
+        fclose(arquivo_binario);
 }   

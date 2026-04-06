@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 #define TAM_REGISTRO_CABECALHO 17
-#define STATUS_CONSISTENT '0'
-#define STATUS_INCONSISTENT '1'
+#define STATUS_CONSISTENT '1'
+#define STATUS_INCONSISTENT '0'
 
 typedef struct cabecalho {
     char status;
