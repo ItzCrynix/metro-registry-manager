@@ -2,7 +2,7 @@ run:
 	./main
 
 all:
-	gcc *.c -o main -w
+	gcc ./internal/*.c -o main -w
 
 clean:
 	rm *.o *.exe *.out
