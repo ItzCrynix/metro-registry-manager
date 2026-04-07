@@ -145,6 +145,7 @@ int buscar_registro_Filtro(const char* nome_arquivo_binario, int quantidade_busc
             scanf("%s", campos[i]);
             ScanQuoteString(valores[i]);
         }
+        //feito
 
         int encontrou_pelo_menos_um = 0;
         for (int rrn = 0; rrn < cabecalho->proximo_rrn; rrn++) {
