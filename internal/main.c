@@ -5,7 +5,7 @@
 #include "utils.h"
 
 typedef enum opcoes {
-    SAIR_PROGRAMA,
+    _,
     CONVERTER_CSV_BIN,
     LER_BINARIO,
     BUSCAR_REGISTROS,
@@ -13,7 +13,7 @@ typedef enum opcoes {
 } Opcoes;
 
 void buscar_registro_rrn();
-void buscar_registro_filtro();
+void busca_filtrada();
 void csv_para_binario();
 void ler_arquivo_binario();
 
@@ -31,15 +31,11 @@ int main() {
             break;
 
         case BUSCAR_REGISTROS:
-            buscar_registro_filtro();
+            busca_filtrada();
             break;
                 
         case BUSCAR_REGISTRO_RRN:
             buscar_registro_rrn();
-            break;
-
-        case SAIR_PROGRAMA:
-            exit(EXIT_SUCCESS);
             break;
 
         default:
@@ -75,30 +71,41 @@ void csv_para_binario() {
     BinarioNaTela(nome_arquivo_binario);
 }
 
-void buscar_registro_filtro() {
+void ler_arquivo_binario() {
+    char nome_arquivo_binario[100];
+    scanf("%s", nome_arquivo_binario);
+    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
+
+    int erro = printar_arquivo_binario(arquivo_binario);
+
+    if (erro == NO_DATA_FOUND_ERROR) {
+        printf("Registro inexistente.\n");
+    } 
+    else if (erro == FILE_NOT_FOUND_ERROR) {
+        printf("Falha no processamento do arquivo.\n");
+    }
+
+    if (arquivo_binario != NULL)
+        fclose(arquivo_binario);
+}
+
+void busca_filtrada() {
     char nome_arquivo_binario[100];
     int quantidade_buscas;
 
     // 1. Lê os dados iniciais
     scanf("%s %d", nome_arquivo_binario, &quantidade_buscas);
     FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
-    Cabecalho* cabecalho = ler_cabecalho_binario(arquivo_binario);
-    if (cabecalho == NULL) {
-        fclose(arquivo_binario);
-        printf("Falha no processamento do arquivo.\n");
-    }
 
-    int erro = buscar_registro_Filtro(nome_arquivo_binario, quantidade_buscas, arquivo_binario,cabecalho);
-    
-    
+    int erro = buscar_registro_filtro(arquivo_binario, quantidade_buscas);
+
     if (erro == FILE_NOT_FOUND_ERROR || erro == MALLOC_ERROR) {
         printf("Falha no processamento do arquivo.\n");
-        fclose(arquivo_binario);
     }
+    
+    if (arquivo_binario != NULL)
+        fclose(arquivo_binario);
 }
-
-
-
 
 void buscar_registro_rrn(){
     char nome_arquivo_binario[100];
@@ -115,29 +122,12 @@ void buscar_registro_rrn(){
     }
     else if (erro == NO_DATA_FOUND_ERROR || erro == INVALID_RRN_ERROR) {
         printf("Registro inexistente.\n");
-    } else {
+    } 
+    else {
         char* registro_formatado = to_string(registro);
         printf("%s\n", registro_formatado);
-         free(registro_formatado);
+        free(registro_formatado);
         free_registro(&registro);
-    }
-
-    if (arquivo_binario != NULL)
-        fclose(arquivo_binario);
-}
-
-void ler_arquivo_binario() {
-    char nome_arquivo_binario[100];
-    scanf("%s", nome_arquivo_binario);
-
-    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
-
-    int erro = printar_arquivo_binario(arquivo_binario);
-
-    if (erro == NO_DATA_FOUND_ERROR) {
-        printf("Registro inexistente.\n");
-    } else if (erro == FILE_NOT_FOUND_ERROR) {
-        printf("Falha no processamento do arquivo.\n");
     }
 
     if (arquivo_binario != NULL)

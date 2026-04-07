@@ -1,9 +1,4 @@
 #include "funcionalidades.h"
-#include <ctype.h>
-
-//isso o gemini fez pra mim, pq eu nunca pensaria nisso, até pq eu nunca usei direito
-
-
 
 typedef struct parestacao {
     int estacao;
@@ -177,7 +172,15 @@ int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn) {
 }
 
 
-int buscar_registro_Filtro(const char* nome_arquivo_binario, int quantidade_buscas, FILE* arquivo_binario, Cabecalho* cabecalho) {
+int buscar_registro_filtro(FILE* arquivo_binario, int quantidade_buscas) {
+    if (arquivo_binario == NULL) {
+        return FILE_NOT_FOUND_ERROR;
+    }
+
+    Cabecalho* cabecalho = ler_cabecalho_binario(arquivo_binario);
+    if (cabecalho == NULL) {
+        return MALLOC_ERROR;
+    }
 
     while (quantidade_buscas > 0) {
         int quantidade_campos = 0;
@@ -210,7 +213,6 @@ int buscar_registro_Filtro(const char* nome_arquivo_binario, int quantidade_busc
             scanf("%s", campos[i]);
             ScanQuoteString(valores[i]);
         }
-        //feito
 
         int encontrou_pelo_menos_um = 0;
         for (int rrn = 0; rrn < cabecalho->proximo_rrn; rrn++) {
@@ -249,6 +251,5 @@ int buscar_registro_Filtro(const char* nome_arquivo_binario, int quantidade_busc
     }
 
     free_cabecalho(&cabecalho);
-    fclose(arquivo_binario);
     return NO_ERROR;
 }
