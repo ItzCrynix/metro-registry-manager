@@ -34,6 +34,24 @@ void free_registro(Registro** registro) {
     *registro = NULL;
 }
 
+// o strtok normal pula os espaços com vários ',' seguidos
+char *meu_strtok(char** buffer, const char* delimitador) {
+    if (buffer == NULL || *buffer == NULL)
+        return NULL;
+
+    char *start = *buffer;
+    char* posicao_delimitador;
+
+    if ((posicao_delimitador = strpbrk(start, delimitador)) != NULL) {
+        *posicao_delimitador = '\0';
+        *buffer = posicao_delimitador + 1;
+    }
+    else
+        *buffer = NULL;
+
+    return start;
+}
+
 Registro* tokenizar_registro(char* buffer) {
     Registro* registro_temporario = (Registro*) malloc(sizeof(Registro));
     if (registro_temporario == NULL) {
@@ -41,30 +59,30 @@ Registro* tokenizar_registro(char* buffer) {
     }
 
     // strtok basicamente retorna uma string do buffer cada vez subsequente que é chamado com o NULL como primeiro argumento
-    char* token = strtok(buffer, ",");
+    char* token = meu_strtok(&buffer, ",");
     registro_temporario->codigo_estacao = integer_or_null(token);
 
-    token = strtok(NULL, ",");
+    token = meu_strtok(&buffer, ",");
     registro_temporario->nome_estacao = strdup(token);
     registro_temporario->tamanho_nome_estacao = strlen(token);
 
-    token = strtok(NULL, ",");
+    token = meu_strtok(&buffer, ",");
     registro_temporario->codigo_linha = integer_or_null(token);
 
-    token = strtok(NULL, ",");
+    token = meu_strtok(&buffer, ",");
     registro_temporario->nome_linha = strdup(token);
     registro_temporario->tamanho_nome_linha = strlen(token);
 
-    token = strtok(NULL, ",");
+    token = meu_strtok(&buffer, ",");
     registro_temporario->codigo_proxima_estacao = integer_or_null(token);
 
-    token = strtok(NULL, ",");
+    token = meu_strtok(&buffer, ",");
     registro_temporario->distancia_proxima_estacao = integer_or_null(token);
 
-    token = strtok(NULL, ",");
+    token = meu_strtok(&buffer, ",");
     registro_temporario->codigo_linha_integracao = integer_or_null(token);
 
-    token = strtok(NULL, ",");
+    token = meu_strtok(&buffer, ",");
     registro_temporario->codigo_estacao_integracao = integer_or_null(token);
 
     return registro_temporario;

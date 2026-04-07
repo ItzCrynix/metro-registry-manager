@@ -63,6 +63,7 @@ void csv_para_binario() {
 
     if (escrever_registros_csv(arquivo_csv, arquivo_binario) == FILE_NOT_FOUND_ERROR) {
         printf("Falha no processamento do arquivo.\n");
+        return;
     }
 
     if (arquivo_csv != NULL)
