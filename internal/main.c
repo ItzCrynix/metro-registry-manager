@@ -124,11 +124,10 @@ void buscar_registro_rrn(){
         printf("Registro inexistente.\n");
     } 
     else {
-        char* registro_formatado = to_string(registro);
-        printf("%s\n", registro_formatado);
-        free(registro_formatado);
-        free_registro(&registro);
+        print_registro(registro);
     }
+
+    free_registro(&registro);
 
     if (arquivo_binario != NULL)
         fclose(arquivo_binario);

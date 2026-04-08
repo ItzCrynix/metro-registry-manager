@@ -1,55 +1,33 @@
 #include "registro.h"
-#include <ctype.h>
-
-static int iguais_sem_case(const char* a, const char* b) {
-    if (a == NULL || b == NULL) return 0;
-
-    while (*a != '\0' && *b != '\0') {
-        if (tolower((unsigned char) *a) != tolower((unsigned char) *b)) {
-            return 0;
-        }
-        a++;
-        b++;
-    }
-
-    return *a == '\0' && *b == '\0';
-}
 
 void free_registro(Registro** registro) {
-    if (*registro == NULL) return;
+    if (registro == NULL || *registro == NULL) return;
 
     // As strings são alocadas separadamente, então é necessário desalocar
-    if ((*registro)->nome_estacao != NULL) {
-        free((*registro)->nome_estacao);
-        (*registro)->nome_estacao = NULL;
-    }
+    free((*registro)->nome_estacao);
+    (*registro)->nome_estacao = NULL;
 
-    if ((*registro)->nome_linha != NULL) {
-        free((*registro)->nome_linha);
-        (*registro)->nome_linha = NULL;
-    }
+    free((*registro)->nome_linha);
+    (*registro)->nome_linha = NULL;
 
     free(*registro);
 
     *registro = NULL;
 }
 
-// o strtok normal pula os espaços com vários ',' seguidos
-char *meu_strtok(char** buffer, const char* delimitador) {
-    if (buffer == NULL || *buffer == NULL)
-        return NULL;
+void free_filtro(Filtro** filtro, int tam) {
+    if (filtro == NULL || *filtro == NULL) return;
 
-    char *start = *buffer;
-    char* posicao_delimitador;
+    for (int i = 0; i < tam; i++) {
+        free((*filtro)[i].campo);
+        free((*filtro)[i].valor);
 
-    if ((posicao_delimitador = strpbrk(start, delimitador)) != NULL) {
-        *posicao_delimitador = '\0';
-        *buffer = posicao_delimitador + 1;
+        (*filtro)[i].campo = NULL;
+        (*filtro)[i].valor = NULL;
     }
-    else
-        *buffer = NULL;
 
-    return start;
+    free(*filtro);
+    *filtro = NULL;
 }
 
 Registro* tokenizar_registro(char* buffer) {
@@ -93,13 +71,8 @@ void int_to_string(char* str, int number) {
         sprintf(str, "%d", number);
 }
 
-char* to_string(Registro* registro) {
-    char* formatado = (char*) calloc(150, sizeof(char));
-    if (formatado == NULL) {
-        return NULL;
-    }
-
-    // instancia todos os campos com valor padrão
+void print_registro(Registro* registro) {
+    // instancia todos os filtro->campos com filtro->valor padrão
     char cod_estacao_formatado[20] = "NULO";
     char cod_linha_formatado[20] = "NULO";
     char cod_prox_estacao_formatado[20] = "NULO";
@@ -114,7 +87,7 @@ char* to_string(Registro* registro) {
     int_to_string(cod_linha_integra_formatado, registro->codigo_linha_integracao);
     int_to_string(cod_estacao_integra_formatado, registro->codigo_estacao_integracao);
 
-    sprintf(formatado, "%s %s %s %s %s %s %s %s",
+    printf("%s %s %s %s %s %s %s %s\n",
         cod_estacao_formatado,
         string_or_null(registro->nome_estacao),
         cod_linha_formatado,
@@ -124,8 +97,6 @@ char* to_string(Registro* registro) {
         cod_linha_integra_formatado,
         cod_estacao_integra_formatado
     );
-
-    return formatado;
 }
 
 void salvar_campos_fixos(FILE* arquivo_binario, Registro* novo_registro) {
@@ -147,7 +118,7 @@ void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
 
     salvar_campos_fixos(arquivo_binario, novo_registro);
 
-    // Salva os dois campos de tamanho variável
+    // Salva os dois filtro->campos de tamanho variável
     fwrite(&novo_registro->tamanho_nome_estacao, sizeof(int), 1, arquivo_binario);
     if (novo_registro->tamanho_nome_estacao > 0) {
         fwrite(novo_registro->nome_estacao, sizeof(char), novo_registro->tamanho_nome_estacao, arquivo_binario);
@@ -188,7 +159,7 @@ Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
 
     registro_encontrado->removido = removido;
 
-    // Leirura dos campos fixos
+    // Leirura dos filtro->campos fixos
     fread(&(registro_encontrado->proximo_registro), sizeof(int), 1, arquivo_binario);
     fread(&(registro_encontrado->codigo_estacao), sizeof(int), 1, arquivo_binario);
     fread(&(registro_encontrado->codigo_linha), sizeof(int), 1, arquivo_binario);
@@ -213,28 +184,31 @@ Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
     return registro_encontrado;
 }
 
-int passou_no_Filtro(int quantidade_campos, char** campos, char** valores, Registro* reg) {
-    for (int i = 0; i < quantidade_campos; i++) {
-        if (iguais_sem_case(campos[i], "CodEstacao")) {
-            if (reg->codigo_estacao != atoi(valores[i])) return 0;
-        } else if (iguais_sem_case(campos[i], "NomeEstacao")) {
-            if (reg->nome_estacao == NULL || !iguais_sem_case(reg->nome_estacao, valores[i])) return 0;
-        } else if (iguais_sem_case(campos[i], "CodLinha")) {
-            if (reg->codigo_linha != atoi(valores[i])) return 0;
-        } else if (iguais_sem_case(campos[i], "NomeLinha")) {
-            if (reg->nome_linha == NULL || !iguais_sem_case(reg->nome_linha, valores[i])) return 0;
-        } else if (iguais_sem_case(campos[i], "CodProxEst")) {
-            if (reg->codigo_proxima_estacao != atoi(valores[i])) return 0;
-        } else if (iguais_sem_case(campos[i], "DistanciaProxEst")) {
-            if (reg->distancia_proxima_estacao != atoi(valores[i])) return 0;
-        } else if (iguais_sem_case(campos[i], "CodLinhaInteg")) {
-            if (reg->codigo_linha_integracao != atoi(valores[i])) return 0;
-        } else if (iguais_sem_case(campos[i], "CodEstacaoInteg")) {
-            if (reg->codigo_estacao_integracao != atoi(valores[i])) return 0;
-        } else {
-            return 0;
+int passou_no_filtro(Registro* registro, Filtro* filtro) {
+        if (strcmp(filtro->campo, "codEstacao") == 0) {
+            return registro->codigo_estacao == atoi(filtro->valor);
         }
-    }
-
-    return 1;
+        if (strcmp(filtro->campo, "codLinha") == 0) {
+            return registro->codigo_linha == atoi(filtro->valor);
+        }
+        if (strcmp(filtro->campo, "codProxEstacao") == 0) {
+            return registro->codigo_proxima_estacao == atoi(filtro->valor);
+        }
+        if (strcmp(filtro->campo, "distProxEstacao") == 0) {
+            return registro->distancia_proxima_estacao == atoi(filtro->valor);
+        }
+        if (strcmp(filtro->campo, "codLinhaIntegra") == 0) {
+            return registro->codigo_linha_integracao == atoi(filtro->valor);
+        }
+        if (strcmp(filtro->campo, "codEstIntegra") == 0) {
+            return registro->codigo_estacao_integracao == atoi(filtro->valor);
+        }
+        if (strcmp(filtro->campo, "nomeEstacao") == 0) {
+            return strcmp(registro->nome_estacao, filtro->valor) == 0;
+        }
+        if (strcmp(filtro->campo, "nomeLinha") == 0) {
+            return strcmp(registro->nome_linha, filtro->valor) == 0;
+        }
+        
+        return 0;
 }
