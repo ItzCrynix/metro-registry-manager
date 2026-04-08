@@ -5,24 +5,31 @@ int integer_or_null(char* str) {
     return str == NULL || strcspn(str, "\n\r") == 0 ? -1 : atoi(str);
 }
 
-static int iguais_sem_case(const char* a, const char* b) {
-    if (a == NULL || b == NULL) return 0;
-
-    while (*a != '\0' && *b != '\0') {
-        if (tolower((unsigned char) *a) != tolower((unsigned char) *b)) {
-            return 0;
-        }
-        a++;
-        b++;
-    }
-
-    return *a == '\0' && *b == '\0';
-}
-
-
 const char* string_or_null(char* str) {
     return str == NULL || strcspn(str, "\n\r") == 0 ? "NULO" : str;
 }
+
+// o strtok normal pula os espaços com vários ',' seguidos...isto contorna este problema
+char* meu_strtok(char** buffer, const char* delimitador) {
+    if (buffer == NULL || *buffer == NULL)
+        return NULL;
+
+    char *start = *buffer;
+    char* posicao_delimitador;
+
+    if ((posicao_delimitador = strpbrk(start, delimitador)) != NULL) {
+        *posicao_delimitador = '\0';
+        *buffer = posicao_delimitador + 1;
+    }
+    else
+        *buffer = NULL;
+
+    return start;
+}
+
+//
+// Funcções disponibilizadas no runcodes
+//
 
 void ScanQuoteString(char *str) {
     char R;
@@ -34,19 +41,21 @@ void ScanQuoteString(char *str) {
         getchar();
         getchar();
         getchar();       // ignorar o "ULO" de NULO.
-        strcpy(str, ""); // copia string vazia
+        strcpy(str, "-1"); // copia string vazia
     } else if (R == '\"') {
         if (scanf("%[^\"]", str) != 1) { // ler até o fechamento das aspas
-            strcpy(str, "");
+            strcpy(str, "-1");
         }
         getchar();         // ignorar aspas fechando
     } else if (R != EOF) { // vc tá tentando ler uma string que não tá entre
                            // aspas! Fazer leitura normal %s então, pois deve
                            // ser algum inteiro ou algo assim...
-        str[0] = R;
-        scanf("%s", &str[1]);
+        int i = 0;
+        str[i++] = R;
+        while ((R = getchar()) != EOF && !isspace(R))
+            str[i++] = R;
     } else { // EOF
-        strcpy(str, "");
+        strcpy(str, "-1");
     }
 }
 

@@ -11,7 +11,7 @@ int busca_par_estacao(ParEstacao* pares, int tam, ParEstacao procurado) {
             return i;
     }
 
-    return -1;
+    return NO_DATA_FOUND_ERROR;
 }
 
 int busca_estacao(char** estacoes, int tam, char* procurado) {
@@ -23,7 +23,7 @@ int busca_estacao(char** estacoes, int tam, char* procurado) {
         }
     }
 
-    return -1;
+    return NO_DATA_FOUND_ERROR;
 }
 
 int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
@@ -60,7 +60,7 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
         }
 
         // verifica se há uma estação na lista, e adiciona caso nao tenha
-        if (busca_estacao(estacoes, 1000, novo_registro->nome_estacao) == -1) {
+        if (busca_estacao(estacoes, 1000, novo_registro->nome_estacao) == NO_DATA_FOUND_ERROR) {
             estacoes[qtd_estacoes] = strdup(novo_registro->nome_estacao);
             qtd_estacoes++;
         }
@@ -75,7 +75,7 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
             }
 
             // verifica se há um par na lista, e adiciona o novo par caso nao tenha
-            if (busca_par_estacao(pares, qtd_pares_estacoes, novo_par) == -1) {
+            if (busca_par_estacao(pares, qtd_pares_estacoes, novo_par) == NO_DATA_FOUND_ERROR) {
                 pares[qtd_pares_estacoes].estacao = novo_par.estacao;
                 pares[qtd_pares_estacoes].proxima_estacao = novo_par.proxima_estacao;
                 qtd_pares_estacoes++;
@@ -135,12 +135,9 @@ int printar_arquivo_binario(FILE* arquivo_binario) {
             continue;
         }
 
-        // formata a string do registro e printa
-        char* registro_formatado = to_string(registro_atual);
-        printf("%s\n", registro_formatado);
+        print_registro(registro_atual);
 
         free_registro(&registro_atual);
-        free(registro_formatado);
     }
 
     free_cabecalho(&cabecalho_binario);
@@ -172,7 +169,7 @@ int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn) {
 }
 
 
-int buscar_registro_filtro(FILE* arquivo_binario, int quantidade_buscas) {
+int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
     if (arquivo_binario == NULL) {
         return FILE_NOT_FOUND_ERROR;
     }
@@ -182,74 +179,60 @@ int buscar_registro_filtro(FILE* arquivo_binario, int quantidade_buscas) {
         return MALLOC_ERROR;
     }
 
-    while (quantidade_buscas > 0) {
-        int quantidade_campos = 0;
-        scanf("%d", &quantidade_campos);
+    while (qtd_buscas > 0) {
+        int qtd_campos;
+        scanf("%d ", &qtd_campos);
 
-        char** campos = (char**) malloc(sizeof(char*) * quantidade_campos);
-        char** valores = (char**) malloc(sizeof(char*) * quantidade_campos);
-        if (campos == NULL || valores == NULL) {
-            free(campos);
-            free(valores);
-            free_cabecalho(&cabecalho);
-            fclose(arquivo_binario);
-            return MALLOC_ERROR;
+        Filtro* filtros = (Filtro*) malloc(sizeof(Filtro) * qtd_campos);
+
+        // Pega todos os campos que serão pesquisados
+        for (int i = 0; i < qtd_campos; i++) {
+            filtros[i].campo = calloc(100, sizeof(char));
+            filtros[i].valor = calloc(100, sizeof(char));
+
+            scanf("%s", filtros[i].campo);
+            ScanQuoteString(filtros[i].valor);
         }
 
-        for (int i = 0; i < quantidade_campos; i++) {
-            campos[i] = (char*) malloc(sizeof(char) * 100);
-            valores[i] = (char*) malloc(sizeof(char) * 100);
-            if (campos[i] == NULL || valores[i] == NULL) {
-                for (int j = 0; j <= i; j++) {
-                    free(campos[j]);
-                    free(valores[j]);
-                }
-                free(campos);
-                free(valores);
-                free_cabecalho(&cabecalho);
-                fclose(arquivo_binario);
-                return MALLOC_ERROR;
-            }
-            scanf("%s", campos[i]);
-            ScanQuoteString(valores[i]);
-        }
+        int encontrou_um = 0;
 
-        int encontrou_pelo_menos_um = 0;
-        for (int rrn = 0; rrn < cabecalho->proximo_rrn; rrn++) {
-            Registro* reg = ler_registro_RRN(arquivo_binario, rrn);
-            if (reg == NULL) {
+        // passa registro por registro procurando um correspondente
+        for (int RRN_atual = 0; RRN_atual < cabecalho->proximo_rrn; RRN_atual++) {
+            Registro* registro_atual = ler_registro_RRN(arquivo_binario, RRN_atual);
+            if (registro_atual == NULL) {
                 continue;
             }
-            int passou_no_filtro = 1;
-            passou_no_filtro = passou_no_Filtro(quantidade_campos, campos, valores, reg);
            
 
-            if (passou_no_filtro) {
-                char* texto = to_string(reg);
-                if (texto != NULL) {
-                    printf("%s\n", texto);
-                    free(texto);
+            int qtd_correspondencias = 0;
+            for (int i = 0; i < qtd_campos; i++) {
+                if (passou_no_filtro(registro_atual, (filtros + i))) {
+                    qtd_correspondencias++;
                 }
-                encontrou_pelo_menos_um = 1;
             }
 
-            free_registro(&reg);
+            if (qtd_correspondencias == qtd_campos) {
+                print_registro(registro_atual);
+                encontrou_um = 1;
+            }
+
+            free_registro(&registro_atual);
         }
 
-        if (!encontrou_pelo_menos_um) {
-            printf("Registro inexistente.\n");
+        if (encontrou_um == 0) {
+            printf("Registro inexistente.");
         }
 
-        for (int i = 0; i < quantidade_campos; i++) {
-            free(campos[i]);
-            free(valores[i]);
+        qtd_buscas--;
+        
+        if (qtd_buscas > 0) {
+            printf("\n");
         }
-        free(campos);
-        free(valores);
 
-        quantidade_buscas--;
+        free_filtro(&filtros, qtd_campos);
     }
 
     free_cabecalho(&cabecalho);
+
     return NO_ERROR;
 }
