@@ -47,7 +47,7 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
     ParEstacao* pares = (ParEstacao*) malloc(sizeof(ParEstacao) * cap_par);
 
     int qtd_estacoes = 0;
-    char** estacoes = (char**) calloc(1000, sizeof(char*));
+    char** estacoes = (char**) calloc(MAX_ESTACOES, sizeof(char*));
 
     int qtd_registros = 0;
     // Lê o arquivo csv linha por linha
@@ -60,7 +60,7 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
         }
 
         // verifica se há uma estação na lista, e adiciona caso nao tenha
-        if (busca_estacao(estacoes, 1000, novo_registro->nome_estacao) == NO_DATA_FOUND_ERROR) {
+        if (busca_estacao(estacoes, MAX_ESTACOES, novo_registro->nome_estacao) == NO_DATA_FOUND_ERROR) {
             estacoes[qtd_estacoes] = strdup(novo_registro->nome_estacao);
             qtd_estacoes++;
         }
@@ -103,7 +103,7 @@ int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
     free_cabecalho(&cabecalho_binario);
     free(pares);
 
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < MAX_ESTACOES; i++)
         free(estacoes[i]);
     free(estacoes);
 
@@ -235,4 +235,4 @@ int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
     free_cabecalho(&cabecalho);
 
     return NO_ERROR;
-}
+   

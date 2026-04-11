@@ -12,6 +12,7 @@
 #define NO_DATA_FOUND_ERROR -3
 #define INVALID_RRN_ERROR -4
 
+
 /**
  * @brief Converte uma string em número
  * @param str A string que será convertida

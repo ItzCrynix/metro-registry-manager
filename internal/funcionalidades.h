@@ -7,6 +7,7 @@
 
 #define MODO_LEITURA_BINARIO "rb+"
 #define MODO_ESCRITA_BINARIO "wb+"
+#define MAX_ESTACOES 1000
 
 /**
  * @brief Escreve um registro novo no arquivo
