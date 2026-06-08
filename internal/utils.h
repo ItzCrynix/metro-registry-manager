@@ -11,6 +11,7 @@
 #define MALLOC_ERROR -2
 #define NO_DATA_FOUND_ERROR -3
 #define INVALID_RRN_ERROR -4
+#define INCOSISTENT_FILE_ERROR -5
 
 /**
  * @brief Converte uma string em número

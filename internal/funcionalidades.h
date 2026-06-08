@@ -5,8 +5,9 @@
 #include "utils.h"
 #include "cabecalho.h"
 
-#define MODO_LEITURA_BINARIO "rb+"
-#define MODO_ESCRITA_BINARIO "wb+"
+#define MODO_LEITURA_BINARIO "rb"
+#define MODO_EDICAO_BINARIO "rb+"
+#define MODO_ESCRITA_BINARIO "wb"
 
 /**
  * @brief Escreve um registro novo no arquivo
