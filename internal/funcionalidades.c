@@ -120,6 +120,10 @@ int printar_arquivo_binario(FILE* arquivo_binario) {
         return MALLOC_ERROR;
     }
 
+    if (cabecalho_binario->status == STATUS_INCONSISTENT) {
+        return INCOSISTENT_FILE_ERROR;
+    }
+
     // Caso nenhum registro tenha sido escrito no arquivo ainda
     if (cabecalho_binario->proximo_rrn == 0) {
         return NO_DATA_FOUND_ERROR;
@@ -155,7 +159,11 @@ int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn) {
         return MALLOC_ERROR;
     }
 
- if (rrn < 0 || rrn >= cabecalho_binario->proximo_rrn) {
+    if (cabecalho_binario->status == STATUS_INCONSISTENT) {
+        return INCOSISTENT_FILE_ERROR;
+    }
+
+    if (rrn < 0 || rrn >= cabecalho_binario->proximo_rrn) {
         free_cabecalho(&cabecalho_binario);
         return INVALID_RRN_ERROR;
     }
@@ -177,6 +185,10 @@ int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
     Cabecalho* cabecalho = ler_cabecalho_binario(arquivo_binario);
     if (cabecalho == NULL) {
         return MALLOC_ERROR;
+    }
+
+    if (cabecalho->status == STATUS_INCONSISTENT) {
+        return INCOSISTENT_FILE_ERROR;
     }
 
     while (qtd_buscas > 0) {
@@ -203,7 +215,6 @@ int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
                 continue;
             }
            
-
             int qtd_correspondencias = 0;
             for (int i = 0; i < qtd_campos; i++) {
                 if (passou_no_filtro(registro_atual, (filtros + i))) {
