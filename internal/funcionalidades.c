@@ -1,31 +1,5 @@
 #include "funcionalidades.h"
 
-typedef struct parestacao {
-    int estacao;
-    int proxima_estacao;
-} ParEstacao;
-
-int busca_par_estacao(ParEstacao* pares, int tam, ParEstacao procurado) {
-    for (int i = 0; i < tam; i++) {
-        if (pares[i].estacao == procurado.estacao && pares[i].proxima_estacao == procurado.proxima_estacao)
-            return i;
-    }
-
-    return NO_DATA_FOUND_ERROR;
-}
-
-int busca_estacao(char** estacoes, int tam, char* procurado) {
-    for (int i = 0; i < tam; i++) {
-        if (estacoes[i] == NULL) break;
-
-        if (strcmp(estacoes[i], procurado) == 0) {
-            return i;
-        }
-    }
-
-    return NO_DATA_FOUND_ERROR;
-}
-
 int escrever_registros_csv(FILE* arquivo_csv, FILE* arquivo_binario) {
     if (arquivo_binario == NULL || arquivo_csv == NULL) {
         return FILE_NOT_FOUND_ERROR;

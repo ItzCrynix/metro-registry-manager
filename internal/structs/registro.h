@@ -1,7 +1,7 @@
 #ifndef REGISTRO_H
 #define REGISTRO_H
 
-#include "utils.h"
+#include "../utils.h"
 #include "cabecalho.h"
 
 #define TAM_REGISTRO_DADOS 80
