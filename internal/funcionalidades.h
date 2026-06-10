@@ -1,9 +1,10 @@
 #ifndef FUNCS_H
 #define FUNCS_H
 
-#include "registro.h"
+#include "./structs/cabecalho.h"
+#include "./structs/par_estacao.h"
+#include "./structs/registro.h"
 #include "utils.h"
-#include "cabecalho.h"
 
 #define MODO_LEITURA_BINARIO "rb"
 #define MODO_EDICAO_BINARIO "rb+"
