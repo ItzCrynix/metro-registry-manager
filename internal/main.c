@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "funcionalidades.h"
-#include "utils.h"
 
 typedef enum opcoes {
     _,
@@ -54,7 +50,7 @@ void csv_para_binario() {
     char nome_arquivo_csv[100], nome_arquivo_binario[100];
     scanf("%s %s", nome_arquivo_csv, nome_arquivo_binario);
 
-    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_ESCRITA_BINARIO);
+    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_SOMENTE_ESCRITA_BINARIO);
     FILE* arquivo_csv = fopen(nome_arquivo_csv, "r");
 
     if (escrever_registros_csv(arquivo_csv, arquivo_binario) == FILE_NOT_FOUND_ERROR) {
@@ -74,7 +70,7 @@ void csv_para_binario() {
 void ler_arquivo_binario() {
     char nome_arquivo_binario[100];
     scanf("%s", nome_arquivo_binario);
-    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
+    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_SOMENTE_LEITURA_BINARIO);
 
     int erro = printar_arquivo_binario(arquivo_binario);
 
@@ -95,7 +91,7 @@ void busca_filtrada() {
 
     // 1. Lê os dados iniciais
     scanf("%s %d", nome_arquivo_binario, &quantidade_buscas);
-    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
+    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_SOMENTE_LEITURA_BINARIO);
 
     int erro = buscar_registro_filtro(arquivo_binario, quantidade_buscas);
 
@@ -107,12 +103,12 @@ void busca_filtrada() {
         fclose(arquivo_binario);
 }
 
-void buscar_registro_rrn(){
+void buscar_registro_rrn() {
     char nome_arquivo_binario[100];
     int rrn = 0;
     scanf("%s %d", nome_arquivo_binario, &rrn);
 
-    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_LEITURA_BINARIO);
+    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_SOMENTE_LEITURA_BINARIO);
     
     Registro* registro = NULL; 
     int erro = procurar_registro_RRN(arquivo_binario, &registro, rrn);
