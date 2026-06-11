@@ -5,13 +5,15 @@ typedef enum opcoes {
     CONVERTER_CSV_BIN,
     LER_BINARIO,
     BUSCAR_REGISTROS,
-    BUSCAR_REGISTRO_RRN
+    BUSCAR_REGISTRO_RRN,
+    CRIAR_ARQUIVO_INDICE
 } Opcoes;
 
 void buscar_registro_rrn();
 void busca_filtrada();
 void csv_para_binario();
 void ler_arquivo_binario();
+void criar_arquivo_indice();
 
 int main() {
     int opcao;
@@ -32,6 +34,10 @@ int main() {
                 
         case BUSCAR_REGISTRO_RRN:
             buscar_registro_rrn();
+            break;
+        
+        case CRIAR_ARQUIVO_INDICE:
+            criar_arquivo_indice();
             break;
 
         default:
@@ -127,4 +133,26 @@ void buscar_registro_rrn() {
 
     if (arquivo_binario != NULL)
         fclose(arquivo_binario);
+}
+
+void criar_arquivo_indice() {
+    char nome_arquivo_binario[100], nome_arquivo_indice[100];
+    scanf("%s %s", nome_arquivo_binario, nome_arquivo_indice);
+
+    FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_SOMENTE_LEITURA_BINARIO);
+    FILE* arquivo_indice = fopen(nome_arquivo_indice, MODO_SOMENTE_ESCRITA_BINARIO);
+
+    int erro = gerar_arquivo_indice(arquivo_binario, arquivo_indice);
+
+    if (erro != NO_ERROR) {
+        printf("Falha no processamento do arquivo.\n");
+    }
+
+    BinarioNaTela(nome_arquivo_indice);
+
+    if (arquivo_binario != NULL)
+        fclose(arquivo_binario);
+
+    if (arquivo_indice != NULL)
+        fclose(arquivo_indice);
 }
