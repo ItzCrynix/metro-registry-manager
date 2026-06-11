@@ -142,6 +142,8 @@ int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn) {
         return INVALID_RRN_ERROR;
     }
 
+    free_cabecalho(&cabecalho_binario);
+
     *registro = ler_registro_RRN(arquivo_binario, rrn);
     if (*registro == NULL) {
         return NO_DATA_FOUND_ERROR;
@@ -162,6 +164,7 @@ int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
     }
 
     if (cabecalho->status == STATUS_INCONSISTENT) {
+        free_cabecalho(&cabecalho);
         return INCOSISTENT_FILE_ERROR;
     }
 
@@ -218,6 +221,58 @@ int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
     }
 
     free_cabecalho(&cabecalho);
+
+    return NO_ERROR;
+}
+
+int gerar_arquivo_indice(FILE* arquivo_binario, FILE* arquivo_indice) {
+    if (arquivo_binario == NULL || arquivo_indice == NULL) {
+        return FILE_NOT_FOUND_ERROR;
+    }
+
+    Cabecalho* cabecalho_binario = ler_cabecalho_binario(arquivo_binario);
+    if (cabecalho_binario == NULL) {
+        return MALLOC_ERROR;
+    }
+
+    if (cabecalho_binario->status == STATUS_INCONSISTENT) {
+        free_cabecalho(&cabecalho_binario);
+        return INCOSISTENT_FILE_ERROR;
+    }
+
+    if (cabecalho_binario->proximo_rrn == 0) {
+        free_cabecalho(&cabecalho_binario);
+        return NO_DATA_FOUND_ERROR;
+    }
+
+    char status = STATUS_INCONSISTENT;
+    fwrite(&status, sizeof(char), 1, arquivo_indice);
+
+    int RRN_atual = 0;
+    while (RRN_atual < cabecalho_binario->proximo_rrn) {
+        int byte_offset = TAM_REGISTRO_CABECALHO + TAM_REGISTRO_DADOS * RRN_atual;
+        fseek(arquivo_binario, byte_offset, SEEK_SET);
+
+        char removido;
+        fread(&removido, sizeof(char), 1, arquivo_binario);
+
+        if (removido == STATUS_REMOVED) {
+            continue;
+        }
+
+        int codigo_estacao;
+        fread(&codigo_estacao, sizeof(int), 1, arquivo_binario);
+
+        fwrite(&codigo_estacao, sizeof(int), 1, arquivo_indice);
+        fwrite(&RRN_atual, sizeof(int), 1, arquivo_indice);
+
+        RRN_atual++;
+    }
+
+    rewind(arquivo_indice);
+
+    status = STATUS_CONSISTENT;
+    fwrite(&status, sizeof(char), 1, arquivo_indice);
 
     return NO_ERROR;
 }

@@ -28,4 +28,6 @@ int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int RRN);
 
 int buscar_registro_filtro(FILE* arquivo_binario, int quantidade_buscas);
 
+int gerar_arquivo_indice(FILE* arquivo_binario, FILE* arquivo_indice);
+
 #endif
