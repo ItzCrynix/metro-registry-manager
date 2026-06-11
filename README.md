@@ -11,6 +11,7 @@ Um sistema que controla arquivos binários que guardam informações a respeito 
 Antes de começar, você vai precisar ter instalado em sua máquina:
 * Compilador de código c/c++
 * Make
+* Docker (Caso não queira baixar nenhum dos anteriores)
 
 ### Execução
 
@@ -26,8 +27,15 @@ cd metro-registry-manager
 ```
 
 3. **Execute a aplicação:**
+Se você for executar com o `gcc`:
 ```bash
-make run
+make all && make run
+```
+
+Se você for executar com o `docker`:
+```bash
+docker image build -t metro-registry-manager .
+docker container run -i metro-registry-manager
 ```
 
 ## Participantes :trollface:

@@ -127,4 +127,4 @@ void buscar_registro_rrn() {
 
     if (arquivo_binario != NULL)
         fclose(arquivo_binario);
-}   
+}

@@ -4,6 +4,6 @@ WORKDIR /src
 
 COPY ./internal .
 COPY estacoes.csv .
-RUN gcc *c -o main
+RUN gcc ./*.c ./structs/*.c ./utils/*.c -o main -w
 
 CMD ["/src/main"]
