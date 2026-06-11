@@ -13,6 +13,11 @@
 #define INVALID_RRN_ERROR -4
 #define INCOSISTENT_FILE_ERROR -5
 
+#define MODO_SOMENTE_LEITURA_BINARIO "rb"
+#define MODO_SOMENTE_ESCRITA_BINARIO "wb"
+#define MODO_LEITURA_EDICAO_BINARIO "rb+"
+#define MODO_ESCRITA_EDICAO_BINARIO "wb+"
+
 /**
  * @brief Converte uma string em número
  * @param str A string que será convertida

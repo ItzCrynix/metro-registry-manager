@@ -4,11 +4,7 @@
 #include "./structs/cabecalho.h"
 #include "./structs/par_estacao.h"
 #include "./structs/registro.h"
-#include "utils.h"
-
-#define MODO_LEITURA_BINARIO "rb"
-#define MODO_EDICAO_BINARIO "rb+"
-#define MODO_ESCRITA_BINARIO "wb"
+#include "./utils/utils.h"
 
 /**
  * @brief Escreve um registro novo no arquivo
