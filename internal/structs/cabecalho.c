@@ -27,29 +27,32 @@ void free_cabecalho(Cabecalho** cabecalho) {
     *cabecalho = NULL;
 }
 
-void salvar_cabecalho(FILE* arquivo_binario, Cabecalho* cabecalho_binario) {
+int salvar_cabecalho(FILE* arquivo_binario, Cabecalho* cabecalho_binario) {
     // volta o ponteiro para o inicio do arquivo
     rewind(arquivo_binario);
 
+    size_t campos_salvos = 0;
+
     // Escreve os registros de cabeçalho
-    fwrite(&cabecalho_binario->status, sizeof(char), 1, arquivo_binario);
-    fwrite(&cabecalho_binario->topo_pilha, sizeof(int), 1, arquivo_binario);
-    fwrite(&cabecalho_binario->proximo_rrn, sizeof(int), 1, arquivo_binario);
-    fwrite(&cabecalho_binario->numero_estacoes, sizeof(int), 1, arquivo_binario);
-    fwrite(&cabecalho_binario->numero_pares_estacoes, sizeof(int), 1, arquivo_binario);
+    campos_salvos += fwrite(&cabecalho_binario->status, sizeof(char), 1, arquivo_binario);
+    campos_salvos += fwrite(&cabecalho_binario->topo_pilha, sizeof(int), 1, arquivo_binario);
+    campos_salvos += fwrite(&cabecalho_binario->proximo_rrn, sizeof(int), 1, arquivo_binario);
+    campos_salvos += fwrite(&cabecalho_binario->numero_estacoes, sizeof(int), 1, arquivo_binario);
+    campos_salvos += fwrite(&cabecalho_binario->numero_pares_estacoes, sizeof(int), 1, arquivo_binario);
+
+    return campos_salvos;
 }
 
-Cabecalho* ler_cabecalho_binario(FILE* arquivo_binario) {
-    Cabecalho* cabecalho_binario = novo_cabecalho();
-    if (cabecalho_binario == NULL) {
-        return NULL;
-    }
+int ler_cabecalho_binario(FILE* arquivo_binario, Cabecalho* cabecalho_binario) {
+    rewind(arquivo_binario);
 
-    fread(&cabecalho_binario->status, sizeof(char), 1, arquivo_binario);
-    fread(&cabecalho_binario->topo_pilha, sizeof(int), 1, arquivo_binario);
-    fread(&cabecalho_binario->proximo_rrn, sizeof(int), 1, arquivo_binario);
-    fread(&cabecalho_binario->numero_estacoes, sizeof(int), 1, arquivo_binario);
-    fread(&cabecalho_binario->numero_pares_estacoes, sizeof(int), 1, arquivo_binario);
+    size_t campos_lidos = 0;
 
-    return cabecalho_binario;
+    campos_lidos += fread(&cabecalho_binario->status, sizeof(char), 1, arquivo_binario);
+    campos_lidos += fread(&cabecalho_binario->topo_pilha, sizeof(int), 1, arquivo_binario);
+    campos_lidos += fread(&cabecalho_binario->proximo_rrn, sizeof(int), 1, arquivo_binario);
+    campos_lidos += fread(&cabecalho_binario->numero_estacoes, sizeof(int), 1, arquivo_binario);
+    campos_lidos += fread(&cabecalho_binario->numero_pares_estacoes, sizeof(int), 1, arquivo_binario);
+
+    return campos_lidos;
 }

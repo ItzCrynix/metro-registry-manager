@@ -9,6 +9,11 @@ const char* string_or_null(char* str) {
     return str == NULL || strcspn(str, "\n\r") == 0 ? "NULO" : str;
 }
 
+void int_to_string(char* str, int number) {
+    if (number != -1) 
+        sprintf(str, "%d", number);
+}
+
 // o strtok normal pula os espaços com vários ',' seguidos...isto contorna este problema
 char* meu_strtok(char** buffer, const char* delimitador) {
     if (buffer == NULL || *buffer == NULL)

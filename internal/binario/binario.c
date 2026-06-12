@@ -60,7 +60,10 @@ int escrever_csv_para_binario(FILE* arquivo_csv, FILE* arquivo_binario) {
         novo_registro->removido = STATUS_NOT_REMOVED;
         novo_registro->proximo_registro = cabecalho_binario->topo_pilha; // Obs: o topo sempre será -1, pois estamos apenas inserindo novos registros
 
-        salvar_registro_binario(arquivo_binario, novo_registro);
+        int qtd_max_bytes = 10 + novo_registro->tamanho_nome_estacao + novo_registro->tamanho_nome_linha;
+        if (salvar_registro_binario(arquivo_binario, novo_registro) < qtd_max_bytes) {
+            return FILE_WRITE_ERROR;
+        }
         qtd_registros++;
 
         free_registro(&novo_registro);
@@ -89,9 +92,13 @@ int printar_arquivo_binario(FILE* arquivo_binario) {
         return FILE_NOT_FOUND_ERROR;
     }
 
-    Cabecalho* cabecalho_binario = ler_cabecalho_binario(arquivo_binario);
+    Cabecalho* cabecalho_binario = novo_cabecalho();
     if (cabecalho_binario == NULL) {
         return MALLOC_ERROR;
+    }
+
+    if (ler_cabecalho_binario(arquivo_binario, cabecalho_binario) < NUM_CAMPOS_CABECALHO) {
+        return FILE_READ_ERROR;
     }
 
     if (cabecalho_binario->status == STATUS_INCONSISTENT) {

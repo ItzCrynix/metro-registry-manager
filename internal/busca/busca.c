@@ -5,9 +5,13 @@ int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn) {
         return FILE_NOT_FOUND_ERROR;
     }
 
-    Cabecalho* cabecalho_binario = ler_cabecalho_binario(arquivo_binario);
+    Cabecalho* cabecalho_binario = novo_cabecalho();
     if (cabecalho_binario == NULL) {
         return MALLOC_ERROR;
+    }
+
+    if (ler_cabecalho_binario(arquivo_binario, cabecalho_binario) < TAM_REGISTRO_CABECALHO) {
+        return FILE_READ_ERROR;
     }
 
     if (cabecalho_binario->status == STATUS_INCONSISTENT) {
@@ -35,13 +39,17 @@ int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
         return FILE_NOT_FOUND_ERROR;
     }
 
-    Cabecalho* cabecalho = ler_cabecalho_binario(arquivo_binario);
-    if (cabecalho == NULL) {
+    Cabecalho* cabecalho_binario = novo_cabecalho();
+    if (cabecalho_binario == NULL) {
         return MALLOC_ERROR;
     }
 
-    if (cabecalho->status == STATUS_INCONSISTENT) {
-        free_cabecalho(&cabecalho);
+    if (ler_cabecalho_binario(arquivo_binario, cabecalho_binario) < NUM_CAMPOS_CABECALHO) {
+        return FILE_READ_ERROR;
+    }
+
+    if (cabecalho_binario->status == STATUS_INCONSISTENT) {
+        free_cabecalho(&cabecalho_binario);
         return INCOSISTENT_FILE_ERROR;
     }
 
@@ -63,7 +71,7 @@ int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
         int encontrou_um = 0;
 
         // passa registro por registro procurando um correspondente
-        for (int RRN_atual = 0; RRN_atual < cabecalho->proximo_rrn; RRN_atual++) {
+        for (int RRN_atual = 0; RRN_atual < cabecalho_binario->proximo_rrn; RRN_atual++) {
             Registro* registro_atual = ler_registro_RRN(arquivo_binario, RRN_atual);
             if (registro_atual == NULL) {
                 continue;
@@ -97,7 +105,7 @@ int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
         free_filtro(&filtros, qtd_campos);
     }
 
-    free_cabecalho(&cabecalho);
+    free_cabecalho(&cabecalho_binario);
 
     return NO_ERROR;
 }

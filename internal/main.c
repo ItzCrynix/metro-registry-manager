@@ -62,7 +62,7 @@ void csv_para_binario() {
     FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_SOMENTE_ESCRITA_BINARIO);
     FILE* arquivo_csv = fopen(nome_arquivo_csv, "r");
 
-    if (escrever_csv_para_binario(arquivo_csv, arquivo_binario) == FILE_NOT_FOUND_ERROR) {
+    if (escrever_csv_para_binario(arquivo_csv, arquivo_binario) != NO_ERROR) {
         printf("Falha no processamento do arquivo.\n");
         return;
     }
@@ -86,7 +86,7 @@ void ler_arquivo_binario() {
     if (erro == NO_DATA_FOUND_ERROR) {
         printf("Registro inexistente.\n");
     } 
-    else if (erro == FILE_NOT_FOUND_ERROR) {
+    else if (erro != NO_ERROR) {
         printf("Falha no processamento do arquivo.\n");
     }
 
@@ -104,7 +104,7 @@ void busca_filtrada() {
 
     int erro = buscar_registro_filtro(arquivo_binario, quantidade_buscas);
 
-    if (erro == FILE_NOT_FOUND_ERROR || erro == MALLOC_ERROR) {
+    if (erro != NO_ERROR) {
         printf("Falha no processamento do arquivo.\n");
     }
     
