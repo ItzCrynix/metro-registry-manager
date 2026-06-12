@@ -1,11 +1,9 @@
 #include "indice.h"
 
 void organiza_lista_indice(Indice* lista, int tam) {
-    int i, j;
-
-    for (i = 1; i < tam; i++) {
+    for (int i = 1; i < tam; i++) {
         Indice aux = lista[i];
-        j = i - 1;
+        int j = i - 1;
 
         while (j >= 0 && lista[j].id > aux.id) {
             lista[j + 1] = lista[j];
@@ -41,9 +39,13 @@ int gerar_arquivo_indice(FILE* arquivo_binario, FILE* arquivo_indice) {
         return FILE_NOT_FOUND_ERROR;
     }
 
-    Cabecalho* cabecalho_binario = ler_cabecalho_binario(arquivo_binario);
+    Cabecalho* cabecalho_binario = novo_cabecalho();
     if (cabecalho_binario == NULL) {
         return MALLOC_ERROR;
+    }
+
+    if (ler_cabecalho_binario(arquivo_binario, cabecalho_binario) < NUM_CAMPOS_CABECALHO) {
+        return FILE_READ_ERROR;
     }
 
     if (cabecalho_binario->status == STATUS_INCONSISTENT) {
@@ -81,10 +83,6 @@ int gerar_arquivo_indice(FILE* arquivo_binario, FILE* arquivo_indice) {
         organiza_lista_indice(indices, pos_indice);
 
         RRN_atual++;
-    }
-
-    for (int i = 0; i < pos_indice; i++) {
-        printf("{id: %d, rrn: %d}\n", indices[i].id, indices[i].RRN);
     }
 
     return salvar_indices(arquivo_indice, indices, pos_indice);
