@@ -15,21 +15,6 @@ void free_registro(Registro** registro) {
     *registro = NULL;
 }
 
-void free_filtro(Filtro** filtro, int tam) {
-    if (filtro == NULL || *filtro == NULL) return;
-
-    for (int i = 0; i < tam; i++) {
-        free((*filtro)[i].campo);
-        free((*filtro)[i].valor);
-
-        (*filtro)[i].campo = NULL;
-        (*filtro)[i].valor = NULL;
-    }
-
-    free(*filtro);
-    *filtro = NULL;
-}
-
 Registro* tokenizar_registro(char* buffer) {
     Registro* registro_temporario = (Registro*) malloc(sizeof(Registro));
     if (registro_temporario == NULL) {
@@ -182,33 +167,4 @@ Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
     fread(registro_encontrado->nome_linha, sizeof(char), registro_encontrado->tamanho_nome_linha, arquivo_binario);
 
     return registro_encontrado;
-}
-
-int passou_no_filtro(Registro* registro, Filtro* filtro) {
-        if (strcmp(filtro->campo, "codEstacao") == 0) {
-            return registro->codigo_estacao == atoi(filtro->valor);
-        }
-        if (strcmp(filtro->campo, "codLinha") == 0) {
-            return registro->codigo_linha == atoi(filtro->valor);
-        }
-        if (strcmp(filtro->campo, "codProxEstacao") == 0) {
-            return registro->codigo_proxima_estacao == atoi(filtro->valor);
-        }
-        if (strcmp(filtro->campo, "distProxEstacao") == 0) {
-            return registro->distancia_proxima_estacao == atoi(filtro->valor);
-        }
-        if (strcmp(filtro->campo, "codLinhaIntegra") == 0) {
-            return registro->codigo_linha_integracao == atoi(filtro->valor);
-        }
-        if (strcmp(filtro->campo, "codEstIntegra") == 0) {
-            return registro->codigo_estacao_integracao == atoi(filtro->valor);
-        }
-        if (strcmp(filtro->campo, "nomeEstacao") == 0) {
-            return strcmp(registro->nome_estacao, filtro->valor) == 0;
-        }
-        if (strcmp(filtro->campo, "nomeLinha") == 0) {
-            return strcmp(registro->nome_linha, filtro->valor) == 0;
-        }
-        
-        return 0;
 }

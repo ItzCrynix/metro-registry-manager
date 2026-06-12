@@ -1,11 +1,7 @@
 #ifndef CABECALHO_H
 #define CABECALHO_H
 
-#include <stdio.h>
-
-#define TAM_REGISTRO_CABECALHO 17
-#define STATUS_CONSISTENT '1'
-#define STATUS_INCONSISTENT '0'
+#include "../utils/utils.h"
 
 typedef struct cabecalho {
     char status;

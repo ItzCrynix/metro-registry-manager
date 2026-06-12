@@ -4,11 +4,6 @@
 #include "../utils/utils.h"
 #include "cabecalho.h"
 
-#define TAM_REGISTRO_DADOS 80
-
-#define STATUS_NOT_REMOVED '0'
-#define STATUS_REMOVED '1'
-
 typedef struct registro {
     char removido;
     int proximo_registro;
