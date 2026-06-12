@@ -32,8 +32,6 @@ typedef struct filtro {
  */
 void free_registro(Registro** registro);
 
-void free_filtro(Filtro** filtro, int tam);
-
 /**
  * @brief Transforma uma string em um novo registro
  * @param buffer A cadeia de caracteres que contem o novo registro
@@ -48,7 +46,7 @@ void print_registro(Registro* registro);
  * @param arquivo_binario
  * @param novo_registro O registro que será salvo
  */
-void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro);
+int salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro);
 
 /**
  * @brief Lê um registro guardado no arquivo binário baseado no RRN (Relative Record Number)
@@ -57,7 +55,5 @@ void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro);
  * @return Um registro, caso encontre, ou NULL
  */
 Registro* ler_registro_RRN(FILE* nome_arquivo, int RRN);
-
-int passou_no_filtro(Registro* registro, Filtro* filtro);
 
 #endif

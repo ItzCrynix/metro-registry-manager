@@ -15,6 +15,11 @@ void free_registro(Registro** registro) {
     *registro = NULL;
 }
 
+/**
+ * @brief Transforma uma string em um novo registro
+ * @param buffer A cadeia de caracteres que contem o novo registro
+ * @return Um registro contendo todas as informações do buffer
+ */
 Registro* tokenizar_registro(char* buffer) {
     Registro* registro_temporario = (Registro*) malloc(sizeof(Registro));
     if (registro_temporario == NULL) {
@@ -51,11 +56,6 @@ Registro* tokenizar_registro(char* buffer) {
     return registro_temporario;
 }
 
-void int_to_string(char* str, int number) {
-    if (number != -1) 
-        sprintf(str, "%d", number);
-}
-
 void print_registro(Registro* registro) {
     // instancia todos os filtro->campos com filtro->valor padrão
     char cod_estacao_formatado[20] = "NULO";
@@ -84,35 +84,46 @@ void print_registro(Registro* registro) {
     );
 }
 
-void salvar_campos_fixos(FILE* arquivo_binario, Registro* novo_registro) {
+int salvar_campos_fixos(FILE* arquivo_binario, Registro* novo_registro) {
+    size_t campos_salvos = 0;
+    
     // status e informações do próximo registro na pilha
-    fwrite(&novo_registro->removido, sizeof(char), 1, arquivo_binario);
-    fwrite(&novo_registro->proximo_registro, sizeof(int), 1, arquivo_binario);
+    campos_salvos += fwrite(&novo_registro->removido, sizeof(char), 1, arquivo_binario);
+    campos_salvos += fwrite(&novo_registro->proximo_registro, sizeof(int), 1, arquivo_binario);
 
     // informações das estações
-    fwrite(&novo_registro->codigo_estacao, sizeof(int), 1, arquivo_binario);
-    fwrite(&novo_registro->codigo_linha, sizeof(int), 1, arquivo_binario);
-    fwrite(&novo_registro->codigo_proxima_estacao, sizeof(int), 1, arquivo_binario);
-    fwrite(&novo_registro->distancia_proxima_estacao, sizeof(int), 1, arquivo_binario);
-    fwrite(&novo_registro->codigo_linha_integracao, sizeof(int), 1, arquivo_binario);
-    fwrite(&novo_registro->codigo_estacao_integracao, sizeof(int), 1, arquivo_binario);
+    campos_salvos += fwrite(&novo_registro->codigo_estacao, sizeof(int), 1, arquivo_binario);
+    campos_salvos += fwrite(&novo_registro->codigo_linha, sizeof(int), 1, arquivo_binario);
+    campos_salvos += fwrite(&novo_registro->codigo_proxima_estacao, sizeof(int), 1, arquivo_binario);
+    campos_salvos += fwrite(&novo_registro->distancia_proxima_estacao, sizeof(int), 1, arquivo_binario);
+    campos_salvos += fwrite(&novo_registro->codigo_linha_integracao, sizeof(int), 1, arquivo_binario);
+    campos_salvos += fwrite(&novo_registro->codigo_estacao_integracao, sizeof(int), 1, arquivo_binario);
+
+    return campos_salvos;
 }
 
-void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
+int salvar_campos_variaveis(FILE* arquivo_binario, Registro* novo_registro) {
+    size_t campos_salvos = 0;
+
+    campos_salvos += fwrite(&novo_registro->tamanho_nome_estacao, sizeof(int), 1, arquivo_binario);
+    if (novo_registro->tamanho_nome_estacao > 0) {
+        campos_salvos += fwrite(novo_registro->nome_estacao, sizeof(char), novo_registro->tamanho_nome_estacao, arquivo_binario);
+    }
+
+    campos_salvos += fwrite(&novo_registro->tamanho_nome_linha, sizeof(int), 1, arquivo_binario);
+    if (novo_registro->tamanho_nome_linha > 0) {
+        campos_salvos += fwrite(novo_registro->nome_linha, sizeof(char), novo_registro->tamanho_nome_linha, arquivo_binario);
+    }
+
+    return campos_salvos;
+}
+
+int salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
     long inicio_registro = ftell(arquivo_binario);
 
-    salvar_campos_fixos(arquivo_binario, novo_registro);
-
-    // Salva os dois filtro->campos de tamanho variável
-    fwrite(&novo_registro->tamanho_nome_estacao, sizeof(int), 1, arquivo_binario);
-    if (novo_registro->tamanho_nome_estacao > 0) {
-        fwrite(novo_registro->nome_estacao, sizeof(char), novo_registro->tamanho_nome_estacao, arquivo_binario);
-    }
-
-    fwrite(&novo_registro->tamanho_nome_linha, sizeof(int), 1, arquivo_binario);
-    if (novo_registro->tamanho_nome_linha > 0) {
-        fwrite(novo_registro->nome_linha, sizeof(char), novo_registro->tamanho_nome_linha, arquivo_binario);
-    }
+    size_t campos_salvos = 0;
+    campos_salvos += salvar_campos_fixos(arquivo_binario, novo_registro);
+    campos_salvos += salvar_campos_variaveis(arquivo_binario, novo_registro);
 
     long final_registro = ftell(arquivo_binario);
 
@@ -125,6 +136,8 @@ void salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
         for (int i = 0; i < bytes_remanescentes; i++)
             fwrite(&placeholder, sizeof(char), 1, arquivo_binario);
     }
+
+    return campos_salvos;
 }
 
 Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
@@ -132,8 +145,7 @@ Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
     fseek(arquivo_binario, byte_offset, SEEK_SET);
 
     char removido = STATUS_REMOVED;
-    fread(&(removido), sizeof(char), 1, arquivo_binario);
-    if(removido == STATUS_REMOVED) {
+    if(fread(&(removido), sizeof(char), 1, arquivo_binario) < 1 || removido == STATUS_REMOVED) {
         return NULL;
     }
     
@@ -144,27 +156,33 @@ Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
 
     registro_encontrado->removido = removido;
 
-    // Leirura dos filtro->campos fixos
-    fread(&(registro_encontrado->proximo_registro), sizeof(int), 1, arquivo_binario);
-    fread(&(registro_encontrado->codigo_estacao), sizeof(int), 1, arquivo_binario);
-    fread(&(registro_encontrado->codigo_linha), sizeof(int), 1, arquivo_binario);
-    fread(&(registro_encontrado->codigo_proxima_estacao), sizeof(int), 1, arquivo_binario);
-    fread(&(registro_encontrado->distancia_proxima_estacao), sizeof(int), 1, arquivo_binario);
-    fread(&(registro_encontrado->codigo_linha_integracao), sizeof(int), 1, arquivo_binario);
-    fread(&(registro_encontrado->codigo_estacao_integracao), sizeof(int), 1, arquivo_binario);
+    size_t campos_lidos = 0;
+    campos_lidos += fread(&(registro_encontrado->proximo_registro), sizeof(int), 1, arquivo_binario);
+    campos_lidos += fread(&(registro_encontrado->codigo_estacao), sizeof(int), 1, arquivo_binario);
+    campos_lidos += fread(&(registro_encontrado->codigo_linha), sizeof(int), 1, arquivo_binario);
+    campos_lidos += fread(&(registro_encontrado->codigo_proxima_estacao), sizeof(int), 1, arquivo_binario);
+    campos_lidos += fread(&(registro_encontrado->distancia_proxima_estacao), sizeof(int), 1, arquivo_binario);
+    campos_lidos += fread(&(registro_encontrado->codigo_linha_integracao), sizeof(int), 1, arquivo_binario);
+    campos_lidos += fread(&(registro_encontrado->codigo_estacao_integracao), sizeof(int), 1, arquivo_binario);
 
     // Leitura dos campos variáveis
-    fread(&(registro_encontrado->tamanho_nome_estacao), sizeof(int), 1, arquivo_binario);
+    campos_lidos += fread(&(registro_encontrado->tamanho_nome_estacao), sizeof(int), 1, arquivo_binario);
     if (registro_encontrado->tamanho_nome_estacao > 0) {
         registro_encontrado->nome_estacao = (char*) calloc(registro_encontrado->tamanho_nome_estacao, sizeof(char));
     }
-    fread(registro_encontrado->nome_estacao, sizeof(char), registro_encontrado->tamanho_nome_estacao, arquivo_binario);
+    campos_lidos += fread(registro_encontrado->nome_estacao, sizeof(char), registro_encontrado->tamanho_nome_estacao, arquivo_binario);
     
-    fread(&(registro_encontrado->tamanho_nome_linha), sizeof(int), 1, arquivo_binario);
+    campos_lidos += fread(&(registro_encontrado->tamanho_nome_linha), sizeof(int), 1, arquivo_binario);
     if (registro_encontrado->tamanho_nome_linha > 0) {
         registro_encontrado->nome_linha = (char*) calloc(registro_encontrado->tamanho_nome_linha + 1, sizeof(char));
     }
-    fread(registro_encontrado->nome_linha, sizeof(char), registro_encontrado->tamanho_nome_linha, arquivo_binario);
+    campos_lidos += fread(registro_encontrado->nome_linha, sizeof(char), registro_encontrado->tamanho_nome_linha, arquivo_binario);
+
+    int qtd_max_bytes_lidos = 10 + registro_encontrado->tamanho_nome_estacao + registro_encontrado->tamanho_nome_linha;
+
+    if (campos_lidos < qtd_max_bytes_lidos) {
+        NULL;
+    }
 
     return registro_encontrado;
 }
