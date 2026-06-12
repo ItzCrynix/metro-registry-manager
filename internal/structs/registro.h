@@ -21,11 +21,6 @@ typedef struct registro {
     char* nome_linha;
 } Registro;
 
-typedef struct filtro {
-    char* campo;
-    char* valor;
-} Filtro;
-
 /**
  * @brief Libera a memória de um registro
  * @param registro O endereço que será liberado

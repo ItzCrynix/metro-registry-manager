@@ -62,16 +62,18 @@ void csv_para_binario() {
     FILE* arquivo_binario = fopen(nome_arquivo_binario, MODO_SOMENTE_ESCRITA_BINARIO);
     FILE* arquivo_csv = fopen(nome_arquivo_csv, "r");
 
-    if (escrever_csv_para_binario(arquivo_csv, arquivo_binario) != NO_ERROR) {
-        printf("Falha no processamento do arquivo.\n");
-        return;
-    }
+    int erro = escrever_csv_para_binario(arquivo_csv, arquivo_binario);
 
     if (arquivo_csv != NULL)
         fclose(arquivo_csv);
 
     if (arquivo_binario != NULL)
         fclose(arquivo_binario);
+
+    if (erro != NO_ERROR) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
     BinarioNaTela(nome_arquivo_binario);
 }
@@ -83,15 +85,15 @@ void ler_arquivo_binario() {
 
     int erro = printar_arquivo_binario(arquivo_binario);
 
+    if (arquivo_binario != NULL)
+        fclose(arquivo_binario);
+
     if (erro == NO_DATA_FOUND_ERROR) {
         printf("Registro inexistente.\n");
     } 
     else if (erro != NO_ERROR) {
         printf("Falha no processamento do arquivo.\n");
     }
-
-    if (arquivo_binario != NULL)
-        fclose(arquivo_binario);
 }
 
 void busca_filtrada() {
@@ -104,12 +106,12 @@ void busca_filtrada() {
 
     int erro = buscar_registro_filtro(arquivo_binario, quantidade_buscas);
 
+    if (arquivo_binario != NULL)
+        fclose(arquivo_binario);
+
     if (erro != NO_ERROR) {
         printf("Falha no processamento do arquivo.\n");
     }
-    
-    if (arquivo_binario != NULL)
-        fclose(arquivo_binario);
 }
 
 void buscar_registro_rrn() {
@@ -122,6 +124,11 @@ void buscar_registro_rrn() {
     Registro* registro = NULL; 
     int erro = procurar_registro_RRN(arquivo_binario, &registro, rrn);
 
+    free_registro(&registro);
+
+    if (arquivo_binario != NULL)
+        fclose(arquivo_binario);
+
     if (erro == FILE_NOT_FOUND_ERROR) {
         printf("Falha no processamento do arquivo.\n");
     }
@@ -131,11 +138,6 @@ void buscar_registro_rrn() {
     else {
         print_registro(registro);
     }
-
-    free_registro(&registro);
-
-    if (arquivo_binario != NULL)
-        fclose(arquivo_binario);
 }
 
 void criar_arquivo_indice() {
@@ -147,15 +149,16 @@ void criar_arquivo_indice() {
 
     int erro = gerar_arquivo_indice(arquivo_binario, arquivo_indice);
 
-    if (erro != NO_ERROR) {
-        printf("Falha no processamento do arquivo.\n");
-    }
-
     if (arquivo_binario != NULL)
         fclose(arquivo_binario);
 
     if (arquivo_indice != NULL)
         fclose(arquivo_indice);
+
+    if (erro != NO_ERROR) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
     BinarioNaTela(nome_arquivo_indice);
 }
