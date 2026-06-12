@@ -18,6 +18,14 @@
 #define MODO_LEITURA_EDICAO_BINARIO "rb+"
 #define MODO_ESCRITA_EDICAO_BINARIO "wb+"
 
+#define TAM_REGISTRO_CABECALHO 17
+#define STATUS_CONSISTENT '1'
+#define STATUS_INCONSISTENT '0'
+
+#define TAM_REGISTRO_DADOS 80
+#define STATUS_NOT_REMOVED '0'
+#define STATUS_REMOVED '1'
+
 /**
  * @brief Converte uma string em número
  * @param str A string que será convertida
