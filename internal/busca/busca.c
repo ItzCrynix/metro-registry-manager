@@ -10,7 +10,7 @@ int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int rrn) {
         return MALLOC_ERROR;
     }
 
-    if (ler_cabecalho_binario(arquivo_binario, cabecalho_binario) < TAM_REGISTRO_CABECALHO) {
+    if (ler_cabecalho_binario(arquivo_binario, cabecalho_binario) < NUM_CAMPOS_CABECALHO) {
         return FILE_READ_ERROR;
     }
 

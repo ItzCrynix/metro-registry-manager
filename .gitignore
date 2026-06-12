@@ -2,6 +2,7 @@
 
 *.bin
 *.csv
+*.zip
 
 # Prerequisites
 *.d

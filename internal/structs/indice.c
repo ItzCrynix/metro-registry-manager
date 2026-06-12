@@ -63,7 +63,7 @@ int gerar_arquivo_indice(FILE* arquivo_binario, FILE* arquivo_indice) {
 
     int RRN_atual = 0;
     while (RRN_atual < cabecalho_binario->proximo_rrn) {
-        int byte_offset = TAM_REGISTRO_CABECALHO + TAM_REGISTRO_DADOS * RRN_atual;
+        int byte_offset = TAM_REGISTRO_CABECALHO + TAM_REGISTRO_DADOS * RRN_atual++;
         fseek(arquivo_binario, byte_offset, SEEK_SET);
 
         char removido;
@@ -77,12 +77,10 @@ int gerar_arquivo_indice(FILE* arquivo_binario, FILE* arquivo_indice) {
         fread(&codigo_estacao, sizeof(int), 1, arquivo_binario);
 
         indices[pos_indice].id = codigo_estacao;
-        indices[pos_indice].RRN = RRN_atual;
+        indices[pos_indice].RRN = RRN_atual - 1;
         pos_indice++;
 
         organiza_lista_indice(indices, pos_indice);
-
-        RRN_atual++;
     }
 
     return salvar_indices(arquivo_indice, indices, pos_indice);
