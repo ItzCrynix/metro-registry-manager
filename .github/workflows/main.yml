@@ -15,15 +15,15 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Compilar o programa
-      run: gcc -o programa main.c  # Mude aqui para o seu arquivo principal ou 'make' se tiver um Makefile
+      run: make all  # Mude aqui para o seu arquivo principal ou 'make' se tiver um Makefile
 
     - name: Executar todos os testes
       run: |
         erro=0
-        for arquivo_in in .github/workflow/testes/*.in; do
+        for arquivo_in in ./.github/workflow/testes/*.in; do
           nome=$(basename "$arquivo_in" .in)
-          arquivo_out=".github/workflow/testes/${nome}.out"
-          arquivo_res=".github/workflow/testes/${nome}.res"
+          arquivo_out="./.github/workflow/testes/${nome}.out"
+          arquivo_res="./.github/workflow/testes/${nome}.res"
           
           echo "--------------------------------------"
           echo "Rodando Teste: $nome"
