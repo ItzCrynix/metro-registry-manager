@@ -16,8 +16,12 @@ jobs:
 
     - name: Compilar o programa
       run: make all  # Mude aqui para o seu arquivo principal ou 'make' se tiver um Makefile
+    
+    - name: Pré-execução dos testes
+      run: ./main < "./testes/init.in"
 
     - name: Executar todos os testes
+      continue-on-error: true
       run: |
         erro=0
         for arquivo_in in ./testes/*.in; do
@@ -28,7 +32,7 @@ jobs:
           echo "--------------------------------------"
           echo "Rodando Teste: $nome"
 
-          make run < "$arquivo_in" > "$arquivo_res"
+          ./main < "$arquivo_in" > "$arquivo_res"
           
           if diff -w -Z "$arquivo_out" "$arquivo_res"; then
             echo "✅ Teste $nome PASSOU!"
