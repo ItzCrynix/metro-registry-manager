@@ -29,15 +29,21 @@ jobs:
           arquivo_out="./testes/${nome}.out"
           arquivo_res="./testes/${nome}.res"
           
-          echo "--------------------------------------"
+          echo "====================================================="
           echo "Rodando Teste: $nome"
 
           ./main < "$arquivo_in" > "$arquivo_res"
           
-          if diff -w -Z "$arquivo_out" "$arquivo_res"; then
+          if diff -w -Z "$arquivo_out" "$arquivo_res" > /dev/null; then
             echo "✅ Teste $nome PASSOU!"
           else
             echo "❌ Teste $nome FALHOU!"
+            echo "----------------------------"
+            echo "ESPERADO:"
+            cat "$arquivo_out"
+            echo "----------------------------"
+            echo "RESULTADO:"
+            cat "$arquivo_res"
             erro=1
           fi
         done
