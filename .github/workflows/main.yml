@@ -18,7 +18,11 @@ jobs:
       run: make all  # Mude aqui para o seu arquivo principal ou 'make' se tiver um Makefile
     
     - name: Pré-execução dos testes
-      run: ./main < "./testes/init.in"
+      run: |
+        ./main < "./testes/init.in"
+        ./main < "./testes/init2.in"
+        rm ./testes/init.in ./testes/init2.in
+        mv ./testes/arquivos/estacoes_removidos.bin ./
 
     - name: Executar todos os testes
       continue-on-error: true
@@ -30,7 +34,6 @@ jobs:
           arquivo_res="./testes/${nome}.res"
           
           echo "====================================================="
-          echo "Rodando Teste: $nome"
 
           ./main < "$arquivo_in" > "$arquivo_res"
           
