@@ -4,6 +4,8 @@
 *.csv
 *.zip
 
+!testes/arquivos/*
+
 # Prerequisites
 *.d
 
