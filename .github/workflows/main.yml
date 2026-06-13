@@ -20,15 +20,15 @@ jobs:
     - name: Executar todos os testes
       run: |
         erro=0
-        for arquivo_in in ./.github/workflow/testes/*.in; do
+        for arquivo_in in ./testes/*.in; do
           nome=$(basename "$arquivo_in" .in)
-          arquivo_out="./.github/workflow/testes/${nome}.out"
-          arquivo_res="./.github/workflow/testes/${nome}.res"
+          arquivo_out="./testes/${nome}.out"
+          arquivo_res="./testes/${nome}.res"
           
           echo "--------------------------------------"
           echo "Rodando Teste: $nome"
 
-          ./programa < "$arquivo_in" > "$arquivo_res"
+          make run < "$arquivo_in" > "$arquivo_res"
           
           if diff -w -Z "$arquivo_out" "$arquivo_res"; then
             echo "✅ Teste $nome PASSOU!"
