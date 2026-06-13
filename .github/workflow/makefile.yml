@@ -1,0 +1,43 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+
+    - name: Compilar o programa
+      run: gcc -o programa main.c  # Mude aqui para o seu arquivo principal ou 'make' se tiver um Makefile
+
+    - name: Executar todos os testes
+      run: |
+        erro=0
+        for arquivo_in in .github/workflow/testes/*.in; do
+          nome=$(basename "$arquivo_in" .in)
+          arquivo_out=".github/workflow/testes/${nome}.out"
+          arquivo_res=".github/workflow/testes/${nome}.res"
+          
+          echo "--------------------------------------"
+          echo "Rodando Teste: $nome"
+
+          ./programa < "$arquivo_in" > "$arquivo_res"
+          
+          if diff -w -Z "$arquivo_out" "$arquivo_res"; then
+            echo "✅ Teste $nome PASSOU!"
+          else
+            echo "❌ Teste $nome FALHOU!"
+            erro=1
+          fi
+        done
+
+        if [ $erro -ne 0 ]; then
+          exit 1
+        fi
