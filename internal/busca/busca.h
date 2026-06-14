@@ -5,6 +5,7 @@
 #include "../structs/cabecalho.h"
 #include "../structs/registro.h"
 #include "../structs/indice.h"  
+#include "../filtro/filtro.h"
 typedef struct filtro {
     char* campo;
     char* valor;
@@ -15,9 +16,6 @@ int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int RRN);
 
 // Busca sequencial por filtros (lê filtros da entrada)
 int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas);
-
-// Libera vetor de filtros alocado
-void free_filtro(Filtro** filtro, int tam);
 
 // Verifica se um registro atende a um filtro
 int passou_no_filtro(Registro* registro, Filtro* filtro);
