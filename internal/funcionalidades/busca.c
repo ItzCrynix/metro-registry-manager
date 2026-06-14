@@ -104,49 +104,28 @@ int buscar_registro_filtro_com_indice(FILE* arquivo_binario, FILE* arquivo_indic
     }
 
     for (int busca = 0; busca < qtd_buscas; busca++) {
-        int qtd_filtros = 0;
-        Filtro* filtros = ler_filtros(&qtd_filtros);
-
-        Registro* registro_encontrado;
-        int encontrou = 0;
-        int pos = -1;
-
-        int pos_indice = tem_campo_indice(filtros, qtd_filtros);
-        if (pos_indice != -1) {
-            int valor_cod_estacao = atoi(filtros[pos_indice].valor);
-            pos = busca_binaria_indice(indices, qtd_indices, valor_cod_estacao);
-            if (pos == -1) continue;
-
-            registro_encontrado = ler_registro_RRN(arquivo_binario, indices[pos].RRN);
-            if (registro_encontrado == NULL) continue;
-
-            if (registro_passa_nos_filtros(registro_encontrado, filtros, qtd_filtros)) {
-                encontrou = 1;
-                print_registro(registro_encontrado);
-            }
-        }
-        else {
-            // varre todos os registros
-            for (int rrn = 0; rrn < cabecalho_binario->proximo_rrn; rrn++) {
-                registro_encontrado = ler_registro_RRN(arquivo_binario, rrn);
-                if (registro_encontrado == NULL) continue;
-
-                if (registro_passa_nos_filtros(registro_encontrado, filtros, qtd_filtros)) {
-                    encontrou = 1;
-                    print_registro(registro_encontrado);
-                }
-            }
-        }
-
-        if (!encontrou)
+        int qtd_encontrados = 0;
+        int* cod_para_printar = retorna_todos_codigo_estacao_do_filtro(arquivo_binario, indices, qtd_indices, cabecalho_binario->proximo_rrn, &qtd_encontrados);
+        if (cod_para_printar == NULL || qtd_encontrados == 0)
             printf("Registro inexistente.\n");
+
+        for (int i = 0; i < qtd_encontrados; i++) {
+            int pos_indice = busca_binaria_indice(indices, qtd_indices, cod_para_printar[i]);
+
+            int byte_offset = TAM_CABECALHO_REGISTRO + TAM_REGISTRO_DADOS * indices[pos_indice].RRN;
+
+            Registro* temp = ler_registro_RRN(arquivo_binario, indices[pos_indice].RRN);
+            if (temp == NULL) continue;
+
+            print_registro(temp);
+            free_registro(&temp);
+        }
 
         // problema de formatação
         if (busca < qtd_buscas - 1)
             printf("\n");
 
-        free_registro(&registro_encontrado);
-        free_filtro(&filtros, qtd_filtros);
+        free(cod_para_printar);
     }
 
     free_indice(&indices);

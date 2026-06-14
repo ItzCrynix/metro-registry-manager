@@ -5,7 +5,7 @@
 #include "../structs/cabecalho.h"
 #include "../structs/registro.h"
 #include "../structs/indice.h"  
-#include "../filtro/filtro.h"
+#include "../structs/filtro.h"
 
 // Procura um registro pelo RRN
 int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int RRN);

@@ -6,9 +6,9 @@
 #include "registro.h"
 
 /* Tamanho do cabeçalho do arquivo de índice: 1 byte (status) */
-#define TAM_CAB_INDICE 1
+#define TAM_CABECALHO_INDICE 1
 /* Tamanho de cada registro do índice: 4 bytes (codEstacao) + 4 bytes (RRN) */
-#define TAM_REG_INDICE 8
+#define TAM_REGISTRO_INDICE 8
 
 typedef struct indice {
     int id;   /* codEstacao — chave de busca */

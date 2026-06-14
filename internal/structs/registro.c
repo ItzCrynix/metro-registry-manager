@@ -141,7 +141,7 @@ int salvar_registro_binario(FILE* arquivo_binario, Registro* novo_registro) {
 }
 
 Registro* ler_registro_RRN(FILE* arquivo_binario, int rrn) {
-    int byte_offset = (TAM_REGISTRO_CABECALHO + (TAM_REGISTRO_DADOS * rrn));
+    int byte_offset = (TAM_CABECALHO_REGISTRO + (TAM_REGISTRO_DADOS * rrn));
     fseek(arquivo_binario, byte_offset, SEEK_SET);
 
     char removido = STATUS_REMOVED;

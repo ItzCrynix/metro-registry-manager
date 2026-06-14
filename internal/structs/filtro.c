@@ -66,11 +66,64 @@ int checar_filtros(Registro* registro, Filtro* filtro) {
     return 0;
 }
 
-int tem_campo_indice(Filtro* filtros, int qtd_filtros) {
+int tem_codigo_estacao(Filtro* filtros, int qtd_filtros) {
     for (int i = 0; i < qtd_filtros; i++) {
         if (strcmp(filtros[i].campo, "codEstacao") == 0)
             return i;
     }
 
     return -1;
+}
+
+int* retorna_todos_codigo_estacao_do_filtro(FILE* arquivo_binario, Indice* indices, int qtd_indices, int qtd_registros, int* qtd_encontrados) {
+    int qtd_filtros = 0;
+    Filtro* filtros = ler_filtros(&qtd_filtros);
+
+    *qtd_encontrados = 0;
+    int* registros_encontrados;
+
+    int pos_filtro = tem_codigo_estacao(filtros, qtd_filtros);
+    if (pos_filtro != -1) {
+        int valor_cod_estacao = atoi(filtros[pos_filtro].valor);
+        int pos_busca = busca_binaria_indice(indices, qtd_indices, valor_cod_estacao);
+        if (pos_busca == -1) {
+            free_filtro(&filtros, qtd_filtros);
+            return NULL;
+        }
+
+        Registro* temp = ler_registro_RRN(arquivo_binario, indices[pos_busca].RRN);
+        if (temp == NULL || !registro_passa_nos_filtros(temp, filtros, qtd_filtros)) {
+            free_filtro(&filtros, qtd_filtros);
+            free_registro(&temp);
+            return NULL;
+        }
+
+        registros_encontrados = malloc(sizeof(int));
+        registros_encontrados[(*qtd_encontrados)++] = indices[pos_busca].id;
+
+        free_registro(&temp);
+    }
+    else {
+        registros_encontrados = malloc(sizeof(int) * qtd_registros);
+
+        // varre todos os registros
+        for (int rrn = 0; rrn < qtd_registros; rrn++) {
+            Registro* temp = ler_registro_RRN(arquivo_binario, rrn);
+            if (temp == NULL || !registro_passa_nos_filtros(temp, filtros, qtd_filtros)) {
+                continue;
+            }
+
+            registros_encontrados[(*qtd_encontrados)++] = temp->codigo_estacao;
+            free_registro(&temp);
+        }
+
+        if (*qtd_encontrados == 0) {
+            free(registros_encontrados);
+            registros_encontrados = NULL;
+        }
+    }
+
+    free_filtro(&filtros, qtd_filtros);
+
+    return registros_encontrados;
 }
