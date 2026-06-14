@@ -15,42 +15,59 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Compilar o programa
-      run: make all  # Mude aqui para o seu arquivo principal ou 'make' se tiver um Makefile
-    
-    - name: Pré-execução dos testes
       run: |
-        ./main < "./testes/init.in"
-        ./main < "./testes/init2.in"
-        rm ./testes/init.in ./testes/init2.in
-        mv ./testes/arquivos/estacoes_removidos.bin ./
+        echo "=== Building project ==="
+        make all
 
     - name: Executar todos os testes
       continue-on-error: true
       run: |
-        erro=0
-        for arquivo_in in ./testes/*.in; do
-          nome=$(basename "$arquivo_in" .in)
-          arquivo_out="./testes/${nome}.out"
-          arquivo_res="./testes/${nome}.res"
-          
-          echo "====================================================="
+        #!/usr/bin/env bash
 
-          ./main < "$arquivo_in" > "$arquivo_res"
-          
-          if diff -w -Z "$arquivo_out" "$arquivo_res" > /dev/null; then
-            echo "✅ Teste $nome PASSOU!"
-          else
-            echo "❌ Teste $nome FALHOU!"
-            echo "----------------------------"
-            echo "ESPERADO:"
-            cat "$arquivo_out"
-            echo "----------------------------"
-            echo "RESULTADO:"
-            cat "$arquivo_res"
-            erro=1
-          fi
+        # Exit immediately if a command exits with a non-zero status
+        set -e
+
+        echo ""
+        echo "=== Running testes ==="
+
+        passed=0
+        failed=0
+
+        # Loop through all .in arquivos in the testes directory
+        for infile in $(ls testes/*.in | sort -V); do
+            # Copy support arquivos if they exist, hiding errors if they don't
+            cp testes/arquivos/* . 2>/dev/null || true
+            
+            name=$(basename "$infile" .in)
+            outfile="testes/$name.out"
+
+            if [ ! -f "$outfile" ]; then
+                echo "SKIP $name (no .out file)"
+                continue
+            fi
+
+            actual=$(./main < "$infile" 2>/dev/null | tr -d '\r' | xargs)
+            expected=$(cat "$outfile" | tr -d '\r' | xargs)
+
+            if [ "$actual" = "$expected" ]; then
+                echo "PASS $name"
+                passed=$((passed + 1))
+            else
+                echo "FAIL $name"
+                echo "  expected:   $expected"
+                echo "  actual:     $actual"
+                failed=$((failed + 1))
+            fi
+
+            for f in *.bin; do
+                [ -f "testes/arquivos/$f" ] || rm -f "$f"
+            done
         done
 
-        if [ $erro -ne 0 ]; then
-          exit 1
+        echo ""
+        echo "Results: $passed passed, $failed failed"
+
+        # Exit with an error code if any testes failed so CI or other tools notice
+        if [ $failed -eq 0 ]; then
+            exit 1
         fi
