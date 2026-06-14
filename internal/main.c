@@ -1,6 +1,7 @@
 #include "./funcionalidades/binario.h"
 #include "./funcionalidades/busca.h"
 #include "./funcionalidades/remocao.h"
+#include "./funcionalidades/update.h"
 
 typedef enum opcoes {
     _,
@@ -10,6 +11,7 @@ typedef enum opcoes {
     BUSCAR_REGISTRO_RRN,
     CRIAR_ARQUIVO_INDICE,
     BUSCA_INDEXADA,
+    ATUALIZAR_REGISTRO,
     REMOVER_REGISTRO
 } Opcoes;
 
@@ -20,6 +22,7 @@ void ler_arquivo_binario();
 void criar_arquivo_indice();
 void busca_indexada();
 void remover_registro_indice();
+void atualizar_registros();
 
 int main() {
     int opcao;
@@ -46,6 +49,9 @@ int main() {
             break;
         case REMOVER_REGISTRO:
             remover_registro_indice();
+            break;
+        case ATUALIZAR_REGISTRO:
+            atualizar_registros();
             break;
         default:
             printf("Operacao nao suportada!\n");
@@ -171,6 +177,28 @@ void remover_registro_indice() {
     FILE* idx = fopen(nome_idx, MODO_LEITURA_EDICAO_BINARIO);
 
     int erro = remover_registros_com_indice(bin, idx, qtd_remocoes);
+
+    if (bin != NULL) fclose(bin);
+    if (idx != NULL) fclose(idx);
+
+    if (erro != NO_ERROR) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    BinarioNaTela(nome_bin);
+    BinarioNaTela(nome_idx);
+}
+
+void atualizar_registros() {
+    char nome_bin[100], nome_idx[100];
+    int qtd_atualizacoes;
+    scanf("%s %s %d", nome_bin, nome_idx, &qtd_atualizacoes);
+
+    FILE* bin = fopen(nome_bin, MODO_LEITURA_EDICAO_BINARIO);
+    FILE* idx = fopen(nome_idx, MODO_LEITURA_EDICAO_BINARIO);
+
+    int erro = atualizar_registro(bin, idx, qtd_atualizacoes);
 
     if (bin != NULL) fclose(bin);
     if (idx != NULL) fclose(idx);
