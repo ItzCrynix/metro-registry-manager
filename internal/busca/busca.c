@@ -58,18 +58,7 @@ int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
             if (reg == NULL)
                 continue;
 
-            int correspondencias = 0;
-            for (int i = 0; i < qtd_campos; i++) {
-                if (passou_no_filtro(reg, (filtros + i)))
-                    correspondencias++;
-            }
-
-            if (correspondencias == qtd_campos) {
-                print_registro(reg);
-                encontrou = 1;
-            }
-
-            free_registro(&reg);
+         encontrou += encontrouReg(reg, filtros, qtd_campos);
         }
 
         if (encontrou == 0)
@@ -88,26 +77,6 @@ int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
 }
 
 // Verifica se o registro atende ao filtro
-int passou_no_filtro(Registro* registro, Filtro* filtro) {
-    if (strcmp(filtro->campo, "codEstacao") == 0)
-        return registro->codigo_estacao == atoi(filtro->valor);
-    if (strcmp(filtro->campo, "codLinha") == 0)
-        return registro->codigo_linha == atoi(filtro->valor);
-    if (strcmp(filtro->campo, "codProxEstacao") == 0)
-        return registro->codigo_proxima_estacao == atoi(filtro->valor);
-    if (strcmp(filtro->campo, "distProxEstacao") == 0)
-        return registro->distancia_proxima_estacao == atoi(filtro->valor);
-    if (strcmp(filtro->campo, "codLinhaIntegra") == 0)
-        return registro->codigo_linha_integracao == atoi(filtro->valor);
-    if (strcmp(filtro->campo, "codEstIntegra") == 0)
-        return registro->codigo_estacao_integracao == atoi(filtro->valor);
-    if (strcmp(filtro->campo, "nomeEstacao") == 0)
-        return strcmp(registro->nome_estacao, filtro->valor) == 0;
-    if (strcmp(filtro->campo, "nomeLinha") == 0)
-        return strcmp(registro->nome_linha, filtro->valor) == 0;
-
-    return 0;
-}
 
 
 
@@ -162,16 +131,7 @@ for (int i = 0; i < qtd_filtros; i++) {
                     Registro* reg = ler_registro_RRN(arquivo_binario, indices[pos].RRN);
 
                     if (reg != NULL) {
-                        int correspondencias = 0;
-                        for (int i = 0; i < qtd_filtros; i++) {
-                            if (passou_no_filtro(reg, &filtros[i]))
-                                correspondencias++;
-                        }
-                        if (correspondencias == qtd_filtros) {
-                            print_registro(reg);
-                            encontrou = 1;
-                        }
-                        free_registro(&reg);
+                        encontrou += encontrouReg(reg, filtros, qtd_filtros);
                     }
                 }
                 free(indices);
@@ -183,18 +143,7 @@ for (int i = 0; i < qtd_filtros; i++) {
                 Registro* reg = ler_registro_RRN(arquivo_binario, rrn);
                 if (reg == NULL)
                     continue;
-
-                int correspondencias = 0;
-                for (int i = 0; i < qtd_filtros; i++) {
-                    if (passou_no_filtro(reg, &filtros[i]))
-                        correspondencias++;
-                }
-
-                if (correspondencias == qtd_filtros) {
-                    print_registro(reg);
-                    encontrou = 1;
-                }
-                free_registro(&reg);
+encontrou += encontrouReg(reg, filtros, qtd_filtros);
             }
         }
 
