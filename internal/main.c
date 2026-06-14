@@ -149,7 +149,7 @@ void busca_indexada() {
     FILE* bin = fopen(nome_bin, MODO_SOMENTE_LEITURA_BINARIO);
     FILE* idx = fopen(nome_idx, MODO_SOMENTE_LEITURA_BINARIO);
 
-    int erro = buscar_registro_filtro_indexado(bin, idx, n);
+    int erro = buscar_registro_filtro_com_indice(bin, idx, n);
 
     if (bin != NULL) fclose(bin);
     if (idx != NULL) fclose(idx);

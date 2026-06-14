@@ -13,6 +13,11 @@ typedef struct filtro {
 Filtro* ler_filtros(int* qtd);
 
 void free_filtro(Filtro** filtro, int tam);
-int passou_no_filtro(Registro* registro, Filtro* filtro);
-int encontrouReg(Registro* reg, Filtro* filtros, int qtd_filtros);
+
+int registro_passa_nos_filtros(Registro* reg, Filtro* filtros, int qtd_filtros);
+
+int checar_filtros(Registro* registro, Filtro* filtro);
+
+int tem_campo_indice(Filtro* filtros, int qtd_filtros);
+
 #endif

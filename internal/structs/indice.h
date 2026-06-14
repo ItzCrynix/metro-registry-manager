@@ -15,6 +15,8 @@ typedef struct indice {
     int RRN;  /* posição do registro no arquivo de dados */
 } Indice;
 
+void free_indice(Indice** indice);
+
 /**
  * @brief Ordena a lista de índices por id em ordem crescente (insertion sort)
  */
