@@ -47,18 +47,8 @@ int buscar_registro_filtro(FILE* arquivo_binario, int qtd_buscas) {
     }
 
     while (qtd_buscas > 0) {
-        int qtd_campos;
-        scanf("%d ", &qtd_campos);
-
-        Filtro* filtros = (Filtro*) malloc(sizeof(Filtro) * qtd_campos);
-
-        // lê filtros da entrada
-        for (int i = 0; i < qtd_campos; i++) {
-            filtros[i].campo = calloc(100, sizeof(char));
-            filtros[i].valor = calloc(100, sizeof(char));
-            scanf("%s", filtros[i].campo);
-            ScanQuoteString(filtros[i].valor);
-        }
+       int qtd_campos;
+        Filtro* filtros = ler_filtros(&qtd_campos);
 
         int encontrou = 0;
 
@@ -146,25 +136,17 @@ int buscar_registro_filtro_indexado(FILE* arquivo_binario,
 
     for (int busca = 0; busca < qtd_buscas; busca++) {
         int qtd_filtros;
-        scanf("%d ", &qtd_filtros);
-
-        Filtro* filtros = (Filtro*) malloc(sizeof(Filtro) * qtd_filtros);
+        Filtro* filtros = ler_filtros(&qtd_filtros);
 
         int tem_cod_estacao   = 0;
         int valor_cod_estacao = -1;
 
-        // lê filtros e detecta se há filtro por codEstacao
-        for (int i = 0; i < qtd_filtros; i++) {
-            filtros[i].campo = calloc(100, sizeof(char));
-            filtros[i].valor = calloc(100, sizeof(char));
-            scanf("%s", filtros[i].campo);
-            ScanQuoteString(filtros[i].valor);
-
-            if (strcmp(filtros[i].campo, "codEstacao") == 0) {
-                tem_cod_estacao   = 1;
-                valor_cod_estacao = atoi(filtros[i].valor);
-            }
-        }
+for (int i = 0; i < qtd_filtros; i++) {
+    if (strcmp(filtros[i].campo, "codEstacao") == 0) {
+        tem_cod_estacao   = 1;
+        valor_cod_estacao = atoi(filtros[i].valor);
+    }
+}
 
         int encontrou = 0;
 
