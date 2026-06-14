@@ -1,5 +1,13 @@
 #include "indice.h"
 
+void free_indice(Indice** indice) {
+    if (indice == NULL || *indice == NULL) return;
+
+    free(*indice);
+
+    *indice = NULL;
+}
+
 void organiza_lista_indice(Indice* lista, int tam) {
     for (int i = 1; i < tam; i++) {
         Indice aux = lista[i];

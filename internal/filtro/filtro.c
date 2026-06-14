@@ -30,25 +30,22 @@ void free_filtro(Filtro** filtro, int tam) {
     *filtro = NULL;
 }
 
-int encontrouReg(Registro* reg, Filtro* filtros, int qtd_filtros) {
+int registro_passa_nos_filtros(Registro* registro, Filtro* filtros, int qtd_filtros) {
+    if (registro == NULL || filtros == NULL) return 0;
+
     int correspondencias = 0;
 
     for (int i = 0; i < qtd_filtros; i++) {
-        if (passou_no_filtro(reg, &filtros[i]))
+        if (checar_filtros(registro, &filtros[i]))
             correspondencias++;
     }
 
-    if (correspondencias == qtd_filtros) {
-        print_registro(reg);    
-        free_registro(&reg);   
-        return 1;
-    }
-
-    free_registro(&reg);       
-    return 0;
+    return correspondencias == qtd_filtros ? 1 : 0;
 }
 
-int passou_no_filtro(Registro* registro, Filtro* filtro) {
+int checar_filtros(Registro* registro, Filtro* filtro) {
+    if (registro == NULL || filtro == NULL) return 0;
+
     if (strcmp(filtro->campo, "codEstacao") == 0)
         return registro->codigo_estacao == atoi(filtro->valor);
     if (strcmp(filtro->campo, "codLinha") == 0)
@@ -67,4 +64,13 @@ int passou_no_filtro(Registro* registro, Filtro* filtro) {
         return strcmp(registro->nome_linha, filtro->valor) == 0;
 
     return 0;
+}
+
+int tem_campo_indice(Filtro* filtros, int qtd_filtros) {
+    for (int i = 0; i < qtd_filtros; i++) {
+        if (strcmp(filtros[i].campo, "codEstacao") == 0)
+            return i;
+    }
+
+    return -1;
 }
