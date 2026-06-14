@@ -26,12 +26,11 @@ int remover_registros_com_indice(FILE* arquivo_binario, FILE* arquivo_indice, in
     for (int remocao = 0; remocao < qtd_remocoes; remocao++) {
         int qtd_encontrados = 0;
         int* cod_para_remover = retorna_todos_codigo_estacao_do_filtro(arquivo_binario, indices, qtd_indices, cabecalho_binario->proximo_rrn, &qtd_encontrados);
-        if (cod_para_remover == NULL || qtd_encontrados == 0) {
-            return NO_DATA_FOUND_ERROR;
-        }
+        if (cod_para_remover == NULL) continue;
 
         for (int i = 0; i < qtd_encontrados; i++) {
             int pos_indice = busca_binaria_indice(indices, qtd_indices, cod_para_remover[i]);
+            if (pos_indice == -1) continue;
 
             int byte_offset = TAM_CABECALHO_REGISTRO + TAM_REGISTRO_DADOS * indices[pos_indice].RRN;
             fseek(arquivo_binario, byte_offset, SEEK_SET);
@@ -67,12 +66,30 @@ int remover_registros_com_indice(FILE* arquivo_binario, FILE* arquivo_indice, in
             pos_novo_indice++;
         }
 
+        qtd_indices = pos_novo_indice;
+
         free_indice(&indices);
         indices = novo_indice;
-        qtd_indices = pos_novo_indice;
 
         free(cod_para_remover);
     }
+
+    int pos_pares = 0;
+    ParEstacao* pares = malloc(sizeof(ParEstacao) * qtd_indices);
+    Registro* temp;
+    for (int i = 0; i < qtd_indices; i++) {
+        temp = ler_registro_RRN(arquivo_binario, indices[i].RRN);
+        if (temp == NULL) continue;
+
+        ParEstacao novo_par = {.estacao = temp->codigo_estacao, .proxima_estacao = temp->codigo_proxima_estacao};
+
+        if (busca_par_estacao(pares, pos_pares, novo_par) == NO_DATA_FOUND_ERROR) {
+            pares[pos_pares].estacao = novo_par.estacao;
+            pares[pos_pares].proxima_estacao = novo_par.proxima_estacao;
+            pos_pares++;
+        }
+    }
+    free_registro(&temp);
 
     salvar_indices(arquivo_indice, indices, qtd_indices);
     free_indice(&indices);
@@ -83,11 +100,14 @@ int remover_registros_com_indice(FILE* arquivo_binario, FILE* arquivo_indice, in
     fflush(arquivo_indice);
     ftruncate(fileno(arquivo_indice), tamanho_atual);
 
+    cabecalho_binario->numero_pares_estacoes = pos_pares;
+    cabecalho_binario->numero_estacoes = qtd_indices;
     if (salvar_cabecalho(arquivo_binario, cabecalho_binario) < NUM_CAMPOS_CABECALHO) {
         free_cabecalho(&cabecalho_binario);
         return FILE_WRITE_ERROR;
     }
 
+    free(pares);
     free_cabecalho(&cabecalho_binario);
     return NO_ERROR;
 }

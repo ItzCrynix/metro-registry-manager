@@ -3,6 +3,8 @@
 *.bin
 *.csv
 *.zip
+*.res
+rodar_teste.sh
 
 !testes/arquivos/*
 
