@@ -119,20 +119,7 @@ int passou_no_filtro(Registro* registro, Filtro* filtro) {
     return 0;
 }
 
-// Libera memória alocada para filtros
-void free_filtro(Filtro** filtro, int tam) {
-    if (filtro == NULL || *filtro == NULL) return;
 
-    for (int i = 0; i < tam; i++) {
-        free((*filtro)[i].campo);
-        free((*filtro)[i].valor);
-        (*filtro)[i].campo = NULL;
-        (*filtro)[i].valor = NULL;
-    }
-
-    free(*filtro);
-    *filtro = NULL;
-}
 
 // Busca com apoio do índice primário (usa índice quando há filtro por codEstacao)
 int buscar_registro_filtro_indexado(FILE* arquivo_binario,
