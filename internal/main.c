@@ -1,7 +1,6 @@
-#include "./binario/binario.h"
-#include "./structs/indice.h"
-#include "./structs/registro.h"
-#include "./busca/busca.h"
+#include "./funcionalidades/binario.h"
+#include "./funcionalidades/busca.h"
+#include "./funcionalidades/remocao.h"
 
 typedef enum opcoes {
     _,
@@ -10,7 +9,8 @@ typedef enum opcoes {
     BUSCAR_REGISTROS,
     BUSCAR_REGISTRO_RRN,
     CRIAR_ARQUIVO_INDICE,
-    BUSCA_INDEXADA
+    BUSCA_INDEXADA,
+    REMOVER_REGISTRO
 } Opcoes;
 
 void buscar_registro_rrn();
@@ -19,6 +19,7 @@ void csv_para_binario();
 void ler_arquivo_binario();
 void criar_arquivo_indice();
 void busca_indexada();
+void remover_registro_indice();
 
 int main() {
     int opcao;
@@ -42,6 +43,9 @@ int main() {
             break;
         case BUSCA_INDEXADA:
             busca_indexada();
+            break;
+        case REMOVER_REGISTRO:
+            remover_registro_indice();
             break;
         default:
             printf("Operacao nao suportada!\n");
@@ -156,4 +160,26 @@ void busca_indexada() {
 
     if (erro != NO_ERROR)
         printf("Falha no processamento do arquivo.\n");
+}
+
+void remover_registro_indice() {
+    char nome_bin[100], nome_idx[100];
+    int qtd_remocoes;
+    scanf("%s %s %d", nome_bin, nome_idx, &qtd_remocoes);
+
+    FILE* bin = fopen(nome_bin, MODO_LEITURA_EDICAO_BINARIO);
+    FILE* idx = fopen(nome_idx, MODO_LEITURA_EDICAO_BINARIO);
+
+    int erro = remover_registros_com_indice(bin, idx, qtd_remocoes);
+
+    if (bin != NULL) fclose(bin);
+    if (idx != NULL) fclose(idx);
+
+    if (erro != NO_ERROR) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    BinarioNaTela(nome_bin);
+    BinarioNaTela(nome_idx);
 }

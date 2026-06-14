@@ -2,7 +2,7 @@ run:
 	./main
 
 all:
-	gcc ./internal/structs/*.c ./internal/utils/*.c ./internal/filtro/*.c ./internal/busca/*.c ./internal/binario/*.c ./internal/*.c -o main -w
+	gcc ./internal/funcionalidades/*.c ./internal/structs/*.c ./internal/utils/*.c ./internal/*.c -o main -w
 
 
 

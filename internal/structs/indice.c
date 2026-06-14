@@ -67,7 +67,7 @@ int gerar_arquivo_indice(FILE* arquivo_binario, FILE* arquivo_indice) {
     int rrn = 0;
 
     while (rrn < cab->proximo_rrn) {
-        int offset = TAM_REGISTRO_CABECALHO + TAM_REGISTRO_DADOS * rrn++;
+        int offset = TAM_CABECALHO_REGISTRO + TAM_REGISTRO_DADOS * rrn++;
         fseek(arquivo_binario, offset, SEEK_SET);
 
         char removido;
@@ -107,7 +107,7 @@ Indice* carregar_indice(FILE* arquivo_indice, int* qtd) {
     fseek(arquivo_indice, 0, SEEK_END);
     long tamanho = ftell(arquivo_indice);
 
-    int quantidade = (int)((tamanho - TAM_CAB_INDICE) / TAM_REG_INDICE);
+    int quantidade = (int)((tamanho - TAM_CABECALHO_INDICE) / TAM_REGISTRO_INDICE);
 
     if (quantidade <= 0) {
         *qtd = 0;
@@ -118,7 +118,7 @@ Indice* carregar_indice(FILE* arquivo_indice, int* qtd) {
     if (vec == NULL)
         return NULL;
 
-    fseek(arquivo_indice, TAM_CAB_INDICE, SEEK_SET);
+    fseek(arquivo_indice, TAM_CABECALHO_INDICE, SEEK_SET);
     for (int i = 0; i < quantidade; i++) {
         fread(&vec[i].id,  sizeof(int), 1, arquivo_indice);
         fread(&vec[i].RRN, sizeof(int), 1, arquivo_indice);

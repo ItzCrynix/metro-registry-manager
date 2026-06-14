@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #define NO_ERROR 0
 #define FILE_NOT_FOUND_ERROR -1
@@ -20,7 +21,7 @@
 #define MODO_LEITURA_EDICAO_BINARIO "rb+"
 #define MODO_ESCRITA_EDICAO_BINARIO "wb+"
 
-#define TAM_REGISTRO_CABECALHO 17
+#define TAM_CABECALHO_REGISTRO 17
 #define NUM_CAMPOS_CABECALHO 5
 #define STATUS_CONSISTENT '1'
 #define STATUS_INCONSISTENT '0'
