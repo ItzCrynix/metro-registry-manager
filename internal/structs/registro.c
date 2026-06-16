@@ -1,5 +1,17 @@
 #include "registro.h"
 
+Registro* novo_registro() {
+    Registro* novo = (Registro*) malloc(sizeof(Registro));
+    if (novo = NULL) {
+        return NULL;
+    }
+
+    novo->removido = STATUS_NOT_REMOVED;
+    novo->proximo_registro = -1;
+
+    return novo;
+}
+
 void free_registro(Registro** registro) {
     if (registro == NULL || *registro == NULL) return;
 
@@ -21,7 +33,7 @@ void free_registro(Registro** registro) {
  * @return Um registro contendo todas as informações do buffer
  */
 Registro* tokenizar_registro(char* buffer) {
-    Registro* registro_temporario = (Registro*) malloc(sizeof(Registro));
+    Registro* registro_temporario = novo_registro();
     if (registro_temporario == NULL) {
         return NULL;
     }

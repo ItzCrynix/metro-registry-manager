@@ -35,7 +35,6 @@ int inserir_novos_registros(FILE* arquivo_binario, FILE* arquivo_indice, int qtd
     int c = 0;
     while ((c = getchar()) != '\n' && c != EOF);
 
-    int qtd_inseridos = 0;
     for (int insercao = 0; insercao < qtd_insercao; insercao++) {
         char linha[300];
         if (!fgets(linha, 300, stdin)) {
@@ -64,12 +63,8 @@ int inserir_novos_registros(FILE* arquivo_binario, FILE* arquivo_indice, int qtd
             return FILE_WRITE_ERROR;
         }
 
-        qtd_inseridos++;
-
         free_registro(&novo_registro);
     }
-
-    printf("inseridos: %d\n", qtd_inseridos);
 
     conta_estacao_e_pares(arquivo_binario, cabecalho_binario->proximo_rrn, estacoes, pares, &qtd_estacoes, &qtd_pares);
 
@@ -78,6 +73,9 @@ int inserir_novos_registros(FILE* arquivo_binario, FILE* arquivo_indice, int qtd
     cabecalho_binario->numero_pares_estacoes = qtd_pares;
     salvar_cabecalho(arquivo_binario, cabecalho_binario);
     free_cabecalho(&cabecalho_binario);
+
+    // salva as ultimas alterações no arquivo de indice
+    gerar_arquivo_indice(arquivo_binario, arquivo_indice);
 
     for (int i = 0; i < qtd_estacoes; i++)
         free(estacoes[i]);
