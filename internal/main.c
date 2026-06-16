@@ -11,8 +11,9 @@ typedef enum opcoes {
     BUSCAR_REGISTRO_RRN,
     CRIAR_ARQUIVO_INDICE,
     BUSCA_INDEXADA,
-    ATUALIZAR_REGISTRO,
-    REMOVER_REGISTRO
+    REMOVER_REGISTRO,
+    INSERIR_REGISTRO,
+    ATUALIZAR_REGISTRO
 } Opcoes;
 
 void buscar_registro_rrn();
@@ -192,13 +193,13 @@ void remover_registro_indice() {
 
 void atualizar_registros() {
     char nome_bin[100], nome_idx[100];
-    int qtd_atualizacoes;
-    scanf("%s %s %d", nome_bin, nome_idx, &qtd_atualizacoes);
+    int n;
+    scanf("%s %s %d", nome_bin, nome_idx, &n);
 
     FILE* bin = fopen(nome_bin, MODO_LEITURA_EDICAO_BINARIO);
     FILE* idx = fopen(nome_idx, MODO_LEITURA_EDICAO_BINARIO);
 
-    int erro = atualizar_registro(bin, idx, qtd_atualizacoes);
+    int erro = atualizar_registro(bin, idx, n);
 
     if (bin != NULL) fclose(bin);
     if (idx != NULL) fclose(idx);
