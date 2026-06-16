@@ -22,6 +22,7 @@ void organiza_lista_indice(Indice* lista, int tam) {
 }
 
 int salvar_indices(FILE* arquivo_indice, Indice* indices, int tam) {
+    rewind(arquivo_indice);
     char status = STATUS_INCONSISTENT;
     fwrite(&status, sizeof(char), 1, arquivo_indice);
 
