@@ -46,15 +46,19 @@ int inserir_novos_registros(FILE* arquivo_binario, FILE* arquivo_indice, int qtd
 
         if (cabecalho_binario->topo_pilha != -1) {
             Registro* ultimo_removido = ler_registro_RRN(arquivo_binario, cabecalho_binario->topo_pilha);
+            int byte_offset = TAM_CABECALHO_REGISTRO + cabecalho_binario->topo_pilha * TAM_REGISTRO_DADOS;
+
             cabecalho_binario->topo_pilha = ultimo_removido->proximo_registro;
             free_registro(&ultimo_removido);
 
             // Volta o registro que acabamos de ler
-            fseek(arquivo_binario, -TAM_REGISTRO_DADOS, SEEK_CUR);
+            fseek(arquivo_binario, byte_offset, SEEK_SET);
         }
         else {
             int byte_offset = TAM_CABECALHO_REGISTRO + cabecalho_binario->proximo_rrn * TAM_REGISTRO_DADOS;
             fseek(arquivo_binario, byte_offset, SEEK_SET);
+
+            cabecalho_binario->proximo_rrn++;
         }
 
         int qtd_max_bytes = 10 + novo_registro->tamanho_nome_estacao + novo_registro->tamanho_nome_linha;
@@ -62,6 +66,7 @@ int inserir_novos_registros(FILE* arquivo_binario, FILE* arquivo_indice, int qtd
             free_registro(&novo_registro);
             return FILE_WRITE_ERROR;
         }
+
 
         free_registro(&novo_registro);
     }
