@@ -64,6 +64,25 @@ void ScanQuoteString(char *str) {
     }
 }
 
+void limpa_aspas(char *str) {
+    if (str == NULL) return;
+    
+    // Se começar com aspas
+    if (str[0] == '\"') {
+        size_t len = strlen(str);
+        // Remove a aspa inicial movendo a string para a esquerda
+        memmove(str, str + 1, len);
+        // Se a última era aspa, remove mudando para o terminador \0
+        if (len > 1 && str[len - 2] == '\"') {
+            str[len - 2] = '\0';
+        }
+    }
+    // Trata o caso de ser "NULO" no buffer
+    if (strcmp(str, "NULO") == 0) {
+        strcpy(str, "-1");
+    }
+}
+
 void BinarioNaTela(char *arquivo) {
     FILE *fs;
     if (arquivo == NULL || !(fs = fopen(arquivo, "rb"))) {

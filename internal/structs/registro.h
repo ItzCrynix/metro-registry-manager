@@ -33,6 +33,7 @@ void free_registro(Registro** registro);
  * @return Um registro contendo todas as informações do buffer
  */
 Registro* tokenizar_registro(char* buffer);
+Registro* tokenizar_registro_com_aspas(char* buffer);
 
 void print_registro(Registro* registro);
 

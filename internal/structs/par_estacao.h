@@ -2,6 +2,7 @@
 #define ESTACAO_H
 
 #include "../utils/utils.h"
+#include "registro.h"
 
 typedef struct parestacao {
     int estacao;
@@ -25,5 +26,7 @@ int busca_par_estacao(ParEstacao* pares, int tam, ParEstacao procurado);
  * @return O indice do primeiro elemento que bate com o procurado, se não retorna -1
  */
 int busca_estacao(char** estacoes, int tam, char* procurado);
+
+int conta_estacao_e_pares(FILE* arquivo_binario, int qtd_registros, char** estacoes, ParEstacao* pares, int *qtd_estacoes, int *qtd_pares);
 
 #endif

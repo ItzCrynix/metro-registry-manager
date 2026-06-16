@@ -47,4 +47,6 @@ void ScanQuoteString(char *str);
 
 void BinarioNaTela(char *arquivo);
 
+void limpa_aspas(char *str);
+
 #endif

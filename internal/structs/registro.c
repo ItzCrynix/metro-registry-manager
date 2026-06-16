@@ -56,6 +56,46 @@ Registro* tokenizar_registro(char* buffer) {
     return registro_temporario;
 }
 
+Registro* tokenizar_registro_com_aspas(char* buffer) {
+
+    Registro* registro_temporario = (Registro*) malloc(sizeof(Registro));
+    if (registro_temporario == NULL) {
+        return NULL;
+    }
+
+    // strtok basicamente retorna uma string do buffer cada vez subsequente que é chamado com o NULL como primeiro argumento
+    char* token = strtok(buffer, " ");
+    registro_temporario->codigo_estacao = integer_or_null(token);
+
+    token = strtok(NULL, "\"");
+    limpa_aspas(token);
+    registro_temporario->nome_estacao = strdup(token);
+    registro_temporario->tamanho_nome_estacao = strlen(token);
+
+    token = strtok(NULL, " ");
+    registro_temporario->codigo_linha = integer_or_null(token);
+
+    token = strtok(NULL, "\"");
+    limpa_aspas(token);
+    registro_temporario->nome_linha = strdup(token);
+    registro_temporario->tamanho_nome_linha = strlen(token);
+
+    token = strtok(NULL, " ");
+    registro_temporario->codigo_proxima_estacao = integer_or_null(token);
+
+    token = strtok(NULL, " ");
+    registro_temporario->distancia_proxima_estacao = integer_or_null(token);
+
+    token = strtok(NULL, " ");
+    registro_temporario->codigo_linha_integracao = integer_or_null(token);
+
+    token = strtok(NULL, " \n\r");
+    registro_temporario->codigo_estacao_integracao = integer_or_null(token);
+
+    return registro_temporario;
+}
+
+
 void print_registro(Registro* registro) {
     // instancia todos os filtro->campos com filtro->valor padrão
     char cod_estacao_formatado[20] = "NULO";
