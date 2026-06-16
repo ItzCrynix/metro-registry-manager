@@ -7,107 +7,138 @@ int remover_registros_com_indice(FILE* arquivo_binario, FILE* arquivo_indice, in
     Cabecalho* cabecalho_binario = novo_cabecalho();
     int qtd_indices = 0;
     Indice* indices = carregar_indice(arquivo_indice, &qtd_indices);
-    if (cabecalho_binario == NULL || indices == NULL) {
+    if (cabecalho_binario == NULL || indices == NULL)
         return MALLOC_ERROR;
-    }
 
     if (ler_cabecalho_binario(arquivo_binario, cabecalho_binario) < NUM_CAMPOS_CABECALHO) {
         free_cabecalho(&cabecalho_binario);
         return FILE_READ_ERROR;
     }
 
-    char status_indice;
-    fread(&status_indice, sizeof(char), 1, arquivo_indice);
-    if (cabecalho_binario->status == STATUS_INCONSISTENT || status_indice == STATUS_INCONSISTENT) {
+    if (cabecalho_binario->status == STATUS_INCONSISTENT) {
         free_cabecalho(&cabecalho_binario);
         return INCOSISTENT_FILE_ERROR;
     }
 
+    cabecalho_binario->status = STATUS_INCONSISTENT;
+    salvar_cabecalho(arquivo_binario, cabecalho_binario);
+
+    int algo_removido = 0;
+
     for (int remocao = 0; remocao < qtd_remocoes; remocao++) {
         int qtd_encontrados = 0;
         int* cod_para_remover = retorna_todos_codigo_estacao_do_filtro(arquivo_binario, indices, qtd_indices, cabecalho_binario->proximo_rrn, &qtd_encontrados);
-        if (cod_para_remover == NULL) continue;
+
+        if (cod_para_remover == NULL)
+            continue;
 
         for (int i = 0; i < qtd_encontrados; i++) {
             int pos_indice = busca_binaria_indice(indices, qtd_indices, cod_para_remover[i]);
-            if (pos_indice == -1) continue;
+            if (pos_indice == -1)
+                continue;
 
-            int byte_offset = TAM_CABECALHO_REGISTRO + TAM_REGISTRO_DADOS * indices[pos_indice].RRN;
+            int rrn = indices[pos_indice].RRN;
+            int byte_offset = TAM_CABECALHO_REGISTRO + TAM_REGISTRO_DADOS * rrn;
+
             fseek(arquivo_binario, byte_offset, SEEK_SET);
-
             char removido;
             fread(&removido, sizeof(char), 1, arquivo_binario);
-            if (removido == STATUS_REMOVED) continue;
+            if (removido == STATUS_REMOVED)
+                continue;
 
             fseek(arquivo_binario, byte_offset, SEEK_SET);
-
             removido = STATUS_REMOVED;
             fwrite(&removido, sizeof(char), 1, arquivo_binario);
             fwrite(&cabecalho_binario->topo_pilha, sizeof(int), 1, arquivo_binario);
 
-            cabecalho_binario->topo_pilha = indices[pos_indice].RRN;
+            cabecalho_binario->topo_pilha = rrn;
+            algo_removido = 1;
         }
-
-        // Nesta parte ele atualiza os indices pra tirar os removidos
-        Indice* novo_indice = malloc(sizeof(Indice) * qtd_indices);
-
-        int pos_aux_codigos = 0;
-        int pos_novo_indice = 0;
-        for (int i = 0; i < qtd_indices; i++) {
-            // verifica se o codigo atual é igual ao do indice
-            if (busca_binaria_indice(indices, qtd_indices, cod_para_remover[pos_aux_codigos]) != -1) {
-                pos_aux_codigos++;
-                continue;
-            }
-
-            // copia somente os indices que resta
-            novo_indice[pos_novo_indice].id = indices[i].id;
-            novo_indice[pos_novo_indice].RRN = indices[i].RRN;
-            pos_novo_indice++;
-        }
-
-        qtd_indices = pos_novo_indice;
-
-        free_indice(&indices);
-        indices = novo_indice;
 
         free(cod_para_remover);
     }
 
-    int pos_pares = 0;
-    ParEstacao* pares = malloc(sizeof(ParEstacao) * qtd_indices);
-    Registro* temp;
-    for (int i = 0; i < qtd_indices; i++) {
-        temp = ler_registro_RRN(arquivo_binario, indices[i].RRN);
-        if (temp == NULL) continue;
-
-        ParEstacao novo_par = {.estacao = temp->codigo_estacao, .proxima_estacao = temp->codigo_proxima_estacao};
-
-        if (busca_par_estacao(pares, pos_pares, novo_par) == NO_DATA_FOUND_ERROR) {
-            pares[pos_pares].estacao = novo_par.estacao;
-            pares[pos_pares].proxima_estacao = novo_par.proxima_estacao;
-            pos_pares++;
-        }
-    }
-    free_registro(&temp);
-
-    salvar_indices(arquivo_indice, indices, qtd_indices);
     free_indice(&indices);
+    fflush(arquivo_binario);
 
-    long tamanho_atual = TAM_CABECALHO_INDICE + TAM_REGISTRO_INDICE * qtd_indices;
+    // reconstroi o indice do zero varrendo o binario
+    Indice* novo_indice = malloc(sizeof(Indice) * cabecalho_binario->proximo_rrn);
+    int pos_novo = 0;
 
-    // limpa o que sobrar no final do arquivo
+    for (int rrn = 0; rrn < cabecalho_binario->proximo_rrn; rrn++) {
+        int byte_offset = TAM_CABECALHO_REGISTRO + TAM_REGISTRO_DADOS * rrn;
+        fseek(arquivo_binario, byte_offset, SEEK_SET);
+
+        char removido;
+        fread(&removido, sizeof(char), 1, arquivo_binario);
+        if (removido == STATUS_REMOVED)
+            continue;
+
+        Registro* temp = ler_registro_RRN(arquivo_binario, rrn);
+        if (temp == NULL)
+            continue;
+
+        novo_indice[pos_novo].id  = temp->codigo_estacao;
+        novo_indice[pos_novo].RRN = rrn;
+        pos_novo++;
+
+        free_registro(&temp);
+    }
+
+    organiza_lista_indice(novo_indice, pos_novo);
+
+    salvar_indices(arquivo_indice, novo_indice, pos_novo);
+    long tamanho_indice = TAM_CABECALHO_INDICE + TAM_REGISTRO_INDICE * pos_novo;
     fflush(arquivo_indice);
-    ftruncate(fileno(arquivo_indice), tamanho_atual);
+    ftruncate(fileno(arquivo_indice), tamanho_indice);
+    free(novo_indice);
 
-    cabecalho_binario->numero_pares_estacoes = pos_pares;
-    cabecalho_binario->numero_estacoes = qtd_indices;
+    // so recalcula os contadores se algo foi de fato removido
+    if (algo_removido) {
+        int qtd_estacoes = 0;
+        char** estacoes = malloc(sizeof(char*) * (pos_novo > 0 ? pos_novo : 1));
+
+        int qtd_pares = 0;
+        ParEstacao* pares = malloc(sizeof(ParEstacao) * (pos_novo > 0 ? pos_novo : 1));
+
+        for (int rrn = 0; rrn < cabecalho_binario->proximo_rrn; rrn++) {
+            Registro* temp = ler_registro_RRN(arquivo_binario, rrn);
+            if (temp == NULL)
+                continue;
+
+            if (busca_estacao(estacoes, qtd_estacoes, temp->nome_estacao) == NO_DATA_FOUND_ERROR) {
+                estacoes[qtd_estacoes] = strdup(temp->nome_estacao);
+                qtd_estacoes++;
+            }
+
+            if (temp->codigo_proxima_estacao != -1) {
+                ParEstacao novo_par = {.estacao = temp->codigo_estacao,
+                                       .proxima_estacao = temp->codigo_proxima_estacao};
+                if (busca_par_estacao(pares, qtd_pares, novo_par) == NO_DATA_FOUND_ERROR) {
+                    pares[qtd_pares].estacao = novo_par.estacao;
+                    pares[qtd_pares].proxima_estacao = novo_par.proxima_estacao;
+                    qtd_pares++;
+                }
+            }
+
+            free_registro(&temp);
+        }
+
+        for (int i = 0; i < qtd_estacoes; i++)
+            free(estacoes[i]);
+        free(estacoes);
+        free(pares);
+
+        cabecalho_binario->numero_estacoes = qtd_estacoes;
+        cabecalho_binario->numero_pares_estacoes = qtd_pares;
+    }
+
+    cabecalho_binario->status = STATUS_CONSISTENT;
     if (salvar_cabecalho(arquivo_binario, cabecalho_binario) < NUM_CAMPOS_CABECALHO) {
         free_cabecalho(&cabecalho_binario);
         return FILE_WRITE_ERROR;
     }
 
-    free(pares);
     free_cabecalho(&cabecalho_binario);
     return NO_ERROR;
 }

@@ -20,7 +20,6 @@ jobs:
         make all
 
     - name: Executar todos os testes
-      continue-on-error: true
       run: |
         #!/usr/bin/env bash
 
