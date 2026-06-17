@@ -2,7 +2,10 @@
 
 // verifica se é uma string válida antes de converter
 int integer_or_null(char* str) {
-    return str == NULL || strcspn(str, "\n\r") == 0 ? -1 : atoi(str);
+    if (str == NULL || strcspn(str, "\n\r") == 0 || strcmp(str, "NULO") == 0) {
+        return -1;
+    }
+    return atoi(str);
 }
 
 const char* string_or_null(char* str) {

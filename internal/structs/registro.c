@@ -1,17 +1,5 @@
 #include "registro.h"
 
-Registro* novo_registro() {
-    Registro* novo = (Registro*) malloc(sizeof(Registro));
-    if (novo = NULL) {
-        return NULL;
-    }
-
-    novo->removido = STATUS_NOT_REMOVED;
-    novo->proximo_registro = -1;
-
-    return novo;
-}
-
 void free_registro(Registro** registro) {
     if (registro == NULL || *registro == NULL) return;
 
@@ -33,7 +21,7 @@ void free_registro(Registro** registro) {
  * @return Um registro contendo todas as informações do buffer
  */
 Registro* tokenizar_registro(char* buffer) {
-    Registro* registro_temporario = novo_registro();
+    Registro* registro_temporario = (Registro*) malloc(sizeof(Registro));
     if (registro_temporario == NULL) {
         return NULL;
     }
@@ -69,28 +57,40 @@ Registro* tokenizar_registro(char* buffer) {
 }
 
 Registro* tokenizar_registro_com_aspas(char* buffer) {
-
     Registro* registro_temporario = (Registro*) malloc(sizeof(Registro));
     if (registro_temporario == NULL) {
         return NULL;
     }
 
-    // strtok basicamente retorna uma string do buffer cada vez subsequente que é chamado com o NULL como primeiro argumento
+    registro_temporario->proximo_registro = -1;
+    registro_temporario->removido = STATUS_NOT_REMOVED;
+
     char* token = strtok(buffer, " ");
     registro_temporario->codigo_estacao = integer_or_null(token);
 
     token = strtok(NULL, "\"");
-    limpa_aspas(token);
-    registro_temporario->nome_estacao = strdup(token);
-    registro_temporario->tamanho_nome_estacao = strlen(token);
+
+    if (token != NULL) {
+        limpa_aspas(token);
+        registro_temporario->nome_estacao = strdup(token);
+        registro_temporario->tamanho_nome_estacao = strlen(token);
+    } else {
+        registro_temporario->nome_estacao = strdup("");
+        registro_temporario->tamanho_nome_estacao = 0;
+    }
 
     token = strtok(NULL, " ");
     registro_temporario->codigo_linha = integer_or_null(token);
 
     token = strtok(NULL, "\"");
-    limpa_aspas(token);
-    registro_temporario->nome_linha = strdup(token);
-    registro_temporario->tamanho_nome_linha = strlen(token);
+    if (token != NULL) {
+        limpa_aspas(token);
+        registro_temporario->nome_linha = strdup(token);
+        registro_temporario->tamanho_nome_linha = strlen(token);
+    } else {
+        registro_temporario->nome_linha = strdup("");
+        registro_temporario->tamanho_nome_linha = 0;
+    }
 
     token = strtok(NULL, " ");
     registro_temporario->codigo_proxima_estacao = integer_or_null(token);
