@@ -2,7 +2,10 @@
 
 // verifica se é uma string válida antes de converter
 int integer_or_null(char* str) {
-    return str == NULL || strcspn(str, "\n\r") == 0 ? -1 : atoi(str);
+    if (str == NULL || strcspn(str, "\n\r") == 0 || strcmp(str, "NULO") == 0) {
+        return -1;
+    }
+    return atoi(str);
 }
 
 const char* string_or_null(char* str) {
@@ -60,6 +63,25 @@ void ScanQuoteString(char *str) {
         while ((R = getchar()) != EOF && !isspace(R))
             str[i++] = R;
     } else { // EOF
+        strcpy(str, "-1");
+    }
+}
+
+void limpa_aspas(char *str) {
+    if (str == NULL) return;
+    
+    // Se começar com aspas
+    if (str[0] == '\"') {
+        size_t len = strlen(str);
+        // Remove a aspa inicial movendo a string para a esquerda
+        memmove(str, str + 1, len);
+        // Se a última era aspa, remove mudando para o terminador \0
+        if (len > 1 && str[len - 2] == '\"') {
+            str[len - 2] = '\0';
+        }
+    }
+    // Trata o caso de ser "NULO" no buffer
+    if (strcmp(str, "NULO") == 0) {
         strcpy(str, "-1");
     }
 }

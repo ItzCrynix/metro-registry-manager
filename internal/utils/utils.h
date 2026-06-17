@@ -20,6 +20,7 @@
 #define MODO_SOMENTE_ESCRITA_BINARIO "wb"
 #define MODO_LEITURA_EDICAO_BINARIO "rb+"
 #define MODO_ESCRITA_EDICAO_BINARIO "wb+"
+#define MODO_SOMENTE_LEITURA "r"
 
 #define TAM_CABECALHO_REGISTRO 17
 #define NUM_CAMPOS_CABECALHO 5
@@ -46,5 +47,7 @@ char* meu_strtok(char** buffer, const char* delimitador);
 void ScanQuoteString(char *str);
 
 void BinarioNaTela(char *arquivo);
+
+void limpa_aspas(char *str);
 
 #endif
