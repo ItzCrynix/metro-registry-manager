@@ -1,7 +1,0 @@
-9 estacoes.bin estacoes_indice.bin 3
-1 nomeEstacao "Mendes-Vila Natal"
-2 codLinhaIntegra 45 codEstIntegra 55
-1 nomeEstacao "Luz"
-1 nomeEstacao "Luz Central"
-1 codLinhaIntegra 5
-2 codLinhaIntegra NULO codEstIntegra NULO

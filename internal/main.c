@@ -1,5 +1,7 @@
 #include "./funcionalidades/binario.h"
 #include "./funcionalidades/busca.h"
+#include "./funcionalidades/grafos.h"
+#include "./funcionalidades/indice.h"
 #include "./funcionalidades/remocao.h"
 #include "./funcionalidades/update.h"
 
@@ -13,7 +15,11 @@ typedef enum opcoes {
     BUSCA_INDEXADA,
     REMOVER_REGISTRO,
     INSERIR_REGISTRO,
-    ATUALIZAR_REGISTRO
+    ATUALIZAR_REGISTRO,
+    LISTA_ADJACENCIA,
+    CAMINHO_MINIMO,
+    ARVORE_GERADORA_MINIMA,
+    QUANTIDADE_CICLOS
 } Opcoes;
 
 void buscar_registro_rrn();
@@ -24,6 +30,10 @@ void criar_arquivo_indice();
 void busca_indexada();
 void remover_registro_indice();
 void atualizar_registros();
+void lista_adjacencia();
+void caminho_minimo_estacoes();
+void arvore_geradora();
+void quantidade_ciclos();
 
 int main() {
     int opcao;
@@ -53,6 +63,18 @@ int main() {
             break;
         case ATUALIZAR_REGISTRO:
             atualizar_registros();
+            break;
+        case LISTA_ADJACENCIA:
+            lista_adjacencia();
+            break;
+        case CAMINHO_MINIMO:
+            caminho_minimo_estacoes();
+            break;
+        case ARVORE_GERADORA_MINIMA:
+            arvore_geradora();
+            break;
+        case QUANTIDADE_CICLOS:
+            quantidade_ciclos();
             break;
         default:
             printf("Operacao nao suportada!\n");
@@ -211,4 +233,88 @@ void atualizar_registros() {
 
     BinarioNaTela(nome_bin);
     BinarioNaTela(nome_idx);
+}
+
+void lista_adjacencia() {
+    char nome_bin[100], nome_idx[100];
+    scanf("%s %s", nome_bin, nome_idx);
+
+    FILE* bin = fopen(nome_bin, MODO_SOMENTE_LEITURA_BINARIO);
+
+    int erro = imprimir_lista_adjacencia(bin);
+
+    if (bin != NULL) fclose(bin);
+
+    if (erro != NO_ERROR)
+        printf("Falha na execução da funcionalidade.\n");
+}
+
+void caminho_minimo_estacoes() {
+    char nome_bin[100], nome_idx[100];
+    char campo_origem[100], campo_destino[100];
+    char nome_origem[200], nome_destino[200];
+
+    scanf("%s %s", nome_bin, nome_idx);
+
+    scanf("%s", campo_origem);
+    ScanQuoteString(nome_origem);
+
+    scanf("%s", campo_destino);
+    ScanQuoteString(nome_destino);
+
+    FILE* bin = fopen(nome_bin, MODO_SOMENTE_LEITURA_BINARIO);
+
+    int erro = caminho_mais_curto(bin, nome_origem, nome_destino);
+
+    if (bin != NULL) fclose(bin);
+
+    if (erro == SEM_CAMINHO)
+        printf("Não existe caminho entre as estações solicitadas.\n");
+    else if (erro != NO_ERROR)
+        printf("Falha na execução da funcionalidade.\n");
+}
+
+void arvore_geradora() {
+    char nome_bin[100], nome_idx[100];
+    char campo_origem[100];
+    char nome_origem[200];
+
+    scanf("%s %s", nome_bin, nome_idx);
+
+    scanf("%s", campo_origem);
+    ScanQuoteString(nome_origem);
+
+    FILE* bin = fopen(nome_bin, MODO_SOMENTE_LEITURA_BINARIO);
+
+    int erro = arvore_geradora_minima(bin, nome_origem);
+
+    if (bin != NULL) fclose(bin);
+
+    if (erro != NO_ERROR)
+        printf("Falha na execução da funcionalidade.\n");
+}
+
+void quantidade_ciclos() {
+    char nome_bin[100], nome_idx[100];
+    char campo_origem[100];
+    char nome_origem[200];
+
+    scanf("%s %s", nome_bin, nome_idx);
+
+    scanf("%s", campo_origem);
+    ScanQuoteString(nome_origem);
+
+    FILE* bin = fopen(nome_bin, MODO_SOMENTE_LEITURA_BINARIO);
+
+    int qtd_ciclos = 0;
+    int erro = contar_ciclos(bin, nome_origem, &qtd_ciclos);
+
+    if (bin != NULL) fclose(bin);
+
+    if (erro != NO_ERROR) {
+        printf("Falha na execução da funcionalidade.\n");
+        return;
+    }
+
+    printf("Quantidade de ciclos: %d\n", qtd_ciclos == 0 ? -1 : qtd_ciclos);
 }

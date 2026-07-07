@@ -2,7 +2,7 @@
 #define FILTRO_H
 
 #include "../utils/utils.h"
-#include "indice.h"
+#include "../funcionalidades/indice.h"
 #include "registro.h"
 
 
