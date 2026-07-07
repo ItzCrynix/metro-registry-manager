@@ -1,9 +1,9 @@
 #ifndef INDICE_H
 #define INDICE_H
 
-#include "utils.h"
-#include "cabecalho.h"
-#include "registro.h"
+#include "../utils/utils.h"
+#include "../structs/cabecalho.h"
+#include "../structs/registro.h"
 
 /* Tamanho do cabeçalho do arquivo de índice: 1 byte (status) */
 #define TAM_CABECALHO_INDICE 1

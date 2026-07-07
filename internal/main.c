@@ -1,11 +1,9 @@
-#include "binario.h"
-#include "busca.h"
-#include "remocao.h"
-#include "update.h"
-#include "adjacencia.h"
-#include "caminho.h"
-#include "agm.h"
-#include "ciclos.h"
+#include "./funcionalidades/binario.h"
+#include "./funcionalidades/busca.h"
+#include "./funcionalidades/grafos.h"
+#include "./funcionalidades/indice.h"
+#include "./funcionalidades/remocao.h"
+#include "./funcionalidades/update.h"
 
 typedef enum opcoes {
     _,

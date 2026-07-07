@@ -1,7 +1,7 @@
 #ifndef GRAFO_H
 #define GRAFO_H
 
-#include "utils.h"
+#include "../utils/utils.h"
 #include "cabecalho.h"
 #include "registro.h"
 

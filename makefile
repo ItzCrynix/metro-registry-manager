@@ -1,13 +1,8 @@
-<<<<<<< Updated upstream
-all:
-	gcc *.c -o programaTrab -w
-
 run:
-	./programaTrab
-=======
-all:
-	gcc *.c -o programaTrab -w
+	./main
 
-run:
-	./programaTrab
->>>>>>> Stashed changes
+all:
+	gcc ./internal/funcionalidades/*.c ./internal/structs/*.c ./internal/utils/*.c ./internal/*.c -o main -w
+
+clean:
+	rm *.o *.exe *.bin main

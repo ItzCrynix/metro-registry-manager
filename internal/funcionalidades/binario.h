@@ -1,10 +1,10 @@
 #ifndef BINARIO_H
 #define BINARIO_H
 
-#include "cabecalho.h"
-#include "par_estacao.h"
-#include "registro.h"
-#include "utils.h"
+#include "../utils/utils.h"
+#include "../structs/cabecalho.h"
+#include "../structs/par_estacao.h"
+#include "../structs/registro.h"
 
 /**
  * @brief Escreve um registro novo no arquivo

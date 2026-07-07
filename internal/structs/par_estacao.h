@@ -1,7 +1,7 @@
 #ifndef ESTACAO_H
 #define ESTACAO_H
 
-#include "utils.h"
+#include "../utils/utils.h"
 
 typedef struct parestacao {
     int estacao;

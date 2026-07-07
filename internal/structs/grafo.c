@@ -14,6 +14,10 @@ static const char* nome_por_codigo(CodigoNome* mapa, int qtd, int codigo) {
     return NULL;
 }
 
+//
+// Criamos essas três funções para passar como parâmetro no qsort, que pede um comparador como argumento
+//
+
 static int cmp_str(const void* a, const void* b) {
     return strcmp(*(const char* const*) a, *(const char* const*) b);
 }

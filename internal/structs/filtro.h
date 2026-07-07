@@ -1,8 +1,8 @@
 #ifndef FILTRO_H
 #define FILTRO_H
 
-#include "utils.h"
-#include "indice.h"
+#include "../utils/utils.h"
+#include "../funcionalidades/indice.h"
 #include "registro.h"
 
 
