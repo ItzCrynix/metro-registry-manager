@@ -1,7 +1,7 @@
 #ifndef INDICE_H
 #define INDICE_H
 
-#include "../utils/utils.h"
+#include "utils.h"
 #include "cabecalho.h"
 #include "registro.h"
 

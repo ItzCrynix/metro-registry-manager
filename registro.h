@@ -1,7 +1,7 @@
 #ifndef REGISTRO_H
 #define REGISTRO_H
 
-#include "../utils/utils.h"
+#include "utils.h"
 #include "cabecalho.h"
 
 typedef struct registro {

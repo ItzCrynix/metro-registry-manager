@@ -1,11 +1,11 @@
 #ifndef BUSCA_H
 #define BUSCA_H
 
-#include "../utils/utils.h"
-#include "../structs/cabecalho.h"
-#include "../structs/registro.h"
-#include "../structs/indice.h"  
-#include "../structs/filtro.h"
+#include "utils.h"
+#include "cabecalho.h"
+#include "registro.h"
+#include "indice.h"  
+#include "filtro.h"
 
 // Procura um registro pelo RRN
 int procurar_registro_RRN(FILE* arquivo_binario, Registro** registro, int RRN);

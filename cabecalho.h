@@ -1,7 +1,7 @@
 #ifndef CABECALHO_H
 #define CABECALHO_H
 
-#include "../utils/utils.h"
+#include "utils.h"
 
 typedef struct cabecalho {
     char status;
